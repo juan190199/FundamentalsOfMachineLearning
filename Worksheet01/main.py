@@ -32,7 +32,7 @@ def plot_data(data):
     plt.show()
 
 
-def threshold_classifier(x, threshold, type, error=False):
+def threshold_classifier(x, type, threshold=None, error=False):
     if type == 'A':
         if error is True:
             return 1 / 4 + (threshold - 1 / 2) ** 2
@@ -45,43 +45,66 @@ def threshold_classifier(x, threshold, type, error=False):
         else:
             binary_arr = np.where(x < threshold, 1, 0)
             return binary_arr
+    if type == 'C':
+        if error is True:
+            return 1/2
+        else:
+            return np.random.randint(0, 2, len(x))
+    if type == 'D':
+        if error is True:
+            return 1/2
+        else:
+            return np.ones(len(x))
 
-# ToDo: plot analytical error against numerical error
-def thresholding_error(threshold, N):
+
+# ToDo: Plot errors and standard deviation
+def thresholding_error(N, threshold=None):
     for j in range(len(threshold)):
         for i in range(10):
-            for k in range(4):
+            for k in range(len(N)):
                 data = np.zeros(shape=(N[k], 2))
                 data = create_data(N[k])
                 # Analytical error
-                prob_error_A = threshold_classifier(data[:, 0], threshold[j], type='A', error=True)
-                prob_error_B = threshold_classifier(data[:, 0], threshold[j], type='B', error=True)
+                a_error_A = threshold_classifier(data[:, 0], type='A', threshold=threshold[j], error=True)
+                a_error_B = threshold_classifier(data[:, 0], type='B', threshold=threshold[j], error=True)
+                a_error_C = threshold_classifier(data[:, 0], type='C', threshold=threshold[j], error=True)
+                a_error_D = threshold_classifier(data[:, 0], type='D', threshold=threshold[j], error=True)
                 # Numerical error
-                prediction_A = threshold_classifier(data[:, 0], threshold[j], type='A')
-                prediction_B = threshold_classifier(data[:, 0], threshold[j], type='B')
+                prediction_A = threshold_classifier(data[:, 0], type='A', threshold=threshold[j])
+                prediction_B = threshold_classifier(data[:, 0], type='B', threshold=threshold[j])
+                prediction_C = threshold_classifier(data[:, 0], type='C', threshold=threshold[j])
+                prediction_D = threshold_classifier(data[:, 0], type='D', threshold=threshold[j])
 
-                num_error_A = np.sum(np.abs(np.subtract(prediction_A, data[:, 1])))
-                num_error_B = np.sum(np.abs(np.subtract(prediction_B, data[:, 1])))
+                n_error_A = np.sum(np.abs(np.subtract(prediction_A, data[:, 1])))
+                n_error_B = np.sum(np.abs(np.subtract(prediction_B, data[:, 1])))
+                n_error_C = np.sum(np.abs(np.subtract(prediction_C, data[:, 1])))
+                n_error_D = np.sum(np.abs(np.subtract(prediction_D, data[:, 1])))
 
-                numerical_error_A = num_error_A / (N[k])
-                numerical_error_B = num_error_B / (N[k])
+                num_error_A = n_error_A / (N[k])
+                num_error_B = n_error_B / (N[k])
+                num_error_C = n_error_C / (N[k])
+                num_error_D = n_error_D / (N[k])
 
                 print("Threshold: {}, dataset: {}, batch_size: {}".format(threshold[j], i, N[k]))
-                print("Analytical error classifier A: {}".format(prob_error_A))
-                print("Numerical error classifier A: {}".format(numerical_error_A))
-                print("Analytical error classifier B: {}".format(prob_error_B))
-                print("Numerical error classifier B: {}".format(numerical_error_B))
+                print("Analytical error classifier A: {}".format(a_error_A))
+                print("Numerical error classifier A: {}".format(num_error_A))
+                print("Analytical error classifier B: {}".format(a_error_B))
+                print("Numerical error classifier B: {}".format(num_error_B))
+                print("Analytical error classifier C: {}".format(a_error_C))
+                print("Numerical error classifier C: {}".format(num_error_C))
+                print("Analytical error classifier D: {}".format(a_error_D))
+                print("Numerical error classifier D: {}".format(num_error_D))
 
 
 def main():
     # Task 1
     data = create_data(500)
-    # plot_data(data)
+    plot_data(data)
 
-    # Task 2
+    # Task 2 and 3
     threshold = np.array([0.2, 0.5, 0.6])
     N = np.array([10, 100, 1000, 10000])
-    thresholding_error(threshold, N)
+    thresholding_error(N, threshold)
 
 
 if __name__ == '__main__':
