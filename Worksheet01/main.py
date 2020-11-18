@@ -1,39 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-
-def create_data(N):
-    Y = np.random.randint(0, 2, size=N)  # Sample instance labels from prior 1/2
-    if N == 2:
-        while np.all(Y == Y[0]):
-            Y = np.random.randint(0, 2, size=N)  # Sample instance labels from prior 1/2
-
-    u = np.random.uniform(size=N)
-    X = np.zeros(N)
-
-    for i in range(N):
-        if Y[i] == 0:
-            X[i] = 1 - np.sqrt(1 - u[i])
-        else:
-            X[i] = np.array(np.sqrt(u[i]))
-
-    data_set = np.stack((X, Y), axis=1)
-    return data_set
-
-
-def plot_data(data):
-    fig, ax = plt.subplots(1, 2)
-    ax[0].scatter(data[:, 1], data[:, 0], alpha=0.3, color='black')
-    ax[0].set_title("Scatter of the data")
-    ax[0].set_xlabel("Classes")
-    ax[0].set_xlim(-0.5, 1.5)
-    ax[0].set_ylabel("Data points")
-    ax[0].set_ylim(-0.5, 1.5)
-
-    ax[1].hist2d(data[:, 1], data[:, 0], bins=(2, 20))
-    ax[1].set_title("Histogram of data per class")
-
-    plt.show()
+from Worksheet01 import general as gen
 
 
 def threshold_classifier(x, type, threshold=None, error=False):
@@ -76,7 +44,7 @@ def thresholding_error(N, threshold=None, plot=False, dataset=None):
         for j in range(len(threshold)):
             for i in range(10):
                 for k in range(len(N)):
-                    data = create_data(N[k])
+                    data = gen.create_data(N[k])
 
                     # Analytical error
                     a_error_A = threshold_classifier(data[:, 0], type='A', threshold=threshold[j], error=True)
@@ -152,7 +120,7 @@ def thresholding_error(N, threshold=None, plot=False, dataset=None):
         std_error = np.zeros(shape=(4, len(N)))
         for i in range(10):
             for k in range(len(N)):
-                data = create_data(N[k])
+                data = gen.create_data(N[k])
 
                 # Analytical error
                 a_error_C = threshold_classifier(data[:, 0], type='C', error=True)
@@ -351,21 +319,63 @@ def plot_thresholding_error(error, batch_size, threshold=None, std=None):
     plt.show()
 
 
-def main():
-    # Task 1
-    # data = create_data(500)
-    # plot_data(data)
+def nn_predict(represent, test_set):
+    prediction = np.zeros(test_set.shape[0])
+    for i in range(test_set.shape[0]):
+        if gen.euclidean_distance(represent[0, 0], test_set[i, 0]) < gen.euclidean_distance(represent[1, 0], test_set[i, 0]):
+            prediction[i] = represent[0, 1]
+        if gen.euclidean_distance(represent[0, 0], test_set[i, 0]) > gen.euclidean_distance(represent[1, 0], test_set[i, 0]):
+            prediction[i] = represent[1, 1]
+        else:
+            prediction[i] = np.random.randint(0, 2, 1)
 
-    # Task 2
+    return prediction
+
+
+def nearest_neighbor(represent, test_set):
+    batch_size = len(test_set)
+    prediction = nn_predict(represent, test_set)
+
+    n_error = np.sum(np.abs(np.subtract(prediction, test_set[:, 1])))
+    num_error = n_error / batch_size
+    # print("Numerical error: {}".format(num_error))
+    return num_error
+
+
+def task1():
+    data = gen.create_data(500)
+    gen.plot_data(data)
+
+
+def task2():
     threshold = np.array([0.2, 0.5, 0.6])
     batch_size = np.array([10, 100, 1000, 10000])
     thresholding_error(batch_size, threshold, plot=True, dataset=1)
 
-    # Task 3
+
+def task3():
+    batch_size = np.array([10, 100, 1000, 10000])
     thresholding_error(batch_size, plot=True, dataset=1)
 
-    # Task 4
+
+def task4():
+    test_set = gen.create_data(1000)
+    num_errors = np.zeros(100)
+    for i in range(100):
+        represent = gen.create_data(2)
+        num_errors[i] = nearest_neighbor(represent, test_set)
+
+    print('Mean numerical errors: {}'.format(np.mean(num_errors)))
+    print('Standard deviation numerical errors: {}'.format(np.std(num_errors)))
+
+
+def main():
+    # task1()
+    # task2()
+    # task3()
+    # task4()
 
 
 if __name__ == '__main__':
     main()
+
