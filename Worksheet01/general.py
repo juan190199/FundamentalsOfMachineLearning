@@ -41,8 +41,9 @@ def euclidean_distance(x1, x2):
 
 
 def manhattan_distance(x1, x2):
-    pass
+    return np.sum(np.abs(np.subtract(x1, x2)))
 
 
 def weighted_euclidean_distance():
     pass
+

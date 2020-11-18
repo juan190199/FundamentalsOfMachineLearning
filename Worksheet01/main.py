@@ -319,22 +319,32 @@ def plot_thresholding_error(error, batch_size, threshold=None, std=None):
     plt.show()
 
 
-def nn_predict(represent, test_set):
-    prediction = np.zeros(test_set.shape[0])
-    for i in range(test_set.shape[0]):
-        if gen.euclidean_distance(represent[0, 0], test_set[i, 0]) < gen.euclidean_distance(represent[1, 0], test_set[i, 0]):
-            prediction[i] = represent[0, 1]
-        if gen.euclidean_distance(represent[0, 0], test_set[i, 0]) > gen.euclidean_distance(represent[1, 0], test_set[i, 0]):
-            prediction[i] = represent[1, 1]
-        else:
-            prediction[i] = np.random.randint(0, 2, 1)
+def nn_predict(represent, test_set, metric):
+    if metric == 'euclidean':
+        prediction = np.zeros(test_set.shape[0])
+        for i in range(test_set.shape[0]):
+            if gen.euclidean_distance(represent[0, 0], test_set[i, 0]) < gen.euclidean_distance(represent[1, 0], test_set[i, 0]):
+                prediction[i] = represent[0, 1]
+            if gen.euclidean_distance(represent[0, 0], test_set[i, 0]) > gen.euclidean_distance(represent[1, 0], test_set[i, 0]):
+                prediction[i] = represent[1, 1]
+            else:
+                prediction[i] = np.random.randint(0, 2, 1)
+    if metric == 'manhattan':
+        prediction = np.zeros(test_set.shape[0])
+        for i in range(test_set.shape[0]):
+            if gen.manhattan_distance(represent[0, 0], test_set[i, 0]) < gen.euclidean_distance(represent[1, 0], test_set[i, 0]):
+                prediction[i] = represent[0, 1]
+            if gen.manhattan_distance(represent[0, 0], test_set[i, 0]) > gen.euclidean_distance(represent[1, 0], test_set[i, 0]):
+                prediction[i] = represent[1, 1]
+            else:
+                prediction[i] = np.random.randint(0, 2, 1)
 
     return prediction
 
 
-def nearest_neighbor(represent, test_set):
+def nearest_neighbor(represent, test_set, metric):
     batch_size = len(test_set)
-    prediction = nn_predict(represent, test_set)
+    prediction = nn_predict(represent, test_set, metric)
 
     n_error = np.sum(np.abs(np.subtract(prediction, test_set[:, 1])))
     num_error = n_error / batch_size
@@ -361,19 +371,21 @@ def task3():
 def task4():
     test_set = gen.create_data(1000)
     num_errors = np.zeros(100)
-    for i in range(100):
-        represent = gen.create_data(2)
-        num_errors[i] = nearest_neighbor(represent, test_set)
+    metrics = ['euclidean', 'manhattan']
+    for metric in metrics:
+        for i in range(100):
+            represent = gen.create_data(2)
+            num_errors[i] = nearest_neighbor(represent, test_set, metric)
 
-    print('Mean numerical errors: {}'.format(np.mean(num_errors)))
-    print('Standard deviation numerical errors: {}'.format(np.std(num_errors)))
+        print('Metric: {}. Mean numerical errors: {}'.format(metric, np.mean(num_errors)))
+        print('Metric: {}. Standard deviation numerical errors: {}'.format(metric, np.std(num_errors)))
 
 
 def main():
-    # task1()
-    # task2()
-    # task3()
-    # task4()
+    task1()
+    task2()
+    task3()
+    task4()
 
 
 if __name__ == '__main__':
