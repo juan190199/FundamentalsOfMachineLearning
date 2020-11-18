@@ -131,6 +131,19 @@ def thresholding_error(N, threshold=None, plot=False, dataset=None):
                 std_error['Std. error for batch size {}: '.format(N[k])][3] = np.std(
                     batch_dict['Batch: ' + str(N[k])][3, :])
 
+        print(
+            "Data set: {}, Threshold: {}, Batch size: {}, Classifier: A. Standard deviation analytical error: {}".format(
+                dataset, j, N[k], std_error['Std. error for batch size {}: '.format(N[k])][0]))
+        print(
+            "Data set: {}, Threshold: {}, Batch size: {}, Classifier: A. Standard deviation numerical error: {}".format(
+                dataset, j, N[k], std_error['Std. error for batch size {}: '.format(N[k])][1]))
+        print(
+            "Data set: {}, Threshold: {}, Batch size: {}, Classifier: B. Standard deviation analytical error: {}".format(
+                dataset, j, N[k], std_error['Std. error for batch size {}: '.format(N[k])][2]))
+        print(
+            "Data set: {}, Threshold: {}, Batch size: {}, Classifier: B. Standard deviation numerical error: {} \n".format(
+                dataset, j, N[k], std_error['Std. error for batch size {}: '.format(N[k])][3]))
+
         plot_thresholding_error(thr_dict, N, threshold, std_error)
 
     else:
@@ -178,6 +191,19 @@ def thresholding_error(N, threshold=None, plot=False, dataset=None):
             std_error[1, k] = np.std(error[1, :])
             std_error[2, k] = np.std(error[2, :])
             std_error[3, k] = np.std(error[3, :])
+
+        print(
+            "Data set: {}, Batch size: {}, Classifier: A. Standard deviation analytical error: {}".format(
+                dataset, N[k], std_error[0, k]))
+        print(
+            "Data set: {}, Batch size: {}, Classifier: A. Standard deviation numerical error: {}".format(
+                dataset, N[k], std_error[1, k]))
+        print(
+            "Data set: {}, Batch size: {}, Classifier: B. Standard deviation analytical error: {}".format(
+                dataset, N[k], std_error[2, k]))
+        print(
+            "Data set: {}, Batch size: {}, Classifier: B. Standard deviation numerical error: {} \n".format(
+                dataset, N[k], std_error[3, k]))
 
         plot_thresholding_error(error, N, std=std_error)
 
@@ -333,7 +359,7 @@ def main():
     # Task 2
     threshold = np.array([0.2, 0.5, 0.6])
     batch_size = np.array([10, 100, 1000, 10000])
-    # thresholding_error(batch_size, threshold, plot=True, dataset=1)
+    thresholding_error(batch_size, threshold, plot=True, dataset=1)
 
     # Task 3
     thresholding_error(batch_size, plot=True, dataset=1)
