@@ -348,6 +348,9 @@ def nn_predict(represent, test_set, metric):
             else:
                 prediction[i] = np.random.randint(0, 2, 1)
 
+    if metric == 'weighted euclidean':
+        pass
+
     return prediction
 
 
