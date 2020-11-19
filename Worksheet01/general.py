@@ -22,17 +22,15 @@ def create_data(N):
 
 
 def plot_data(data):
-    fig, ax = plt.subplots(1, 2)
+    fig, ax = plt.subplots(1, 2, figsize=(20,20))
     ax[0].scatter(data[:, 1], data[:, 0], alpha=0.3, color='black')
     ax[0].set_title("Scatter of the data")
     ax[0].set_xlabel("Classes")
     ax[0].set_xlim(-0.5, 1.5)
     ax[0].set_ylabel("Data points")
     ax[0].set_ylim(-0.5, 1.5)
-
     ax[1].hist2d(data[:, 1], data[:, 0], bins=(2, 20))
     ax[1].set_title("Histogram of data per class")
-
     plt.show()
 
 

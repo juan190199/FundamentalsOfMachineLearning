@@ -1,7 +1,9 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-from Worksheet01 import general as gen
+import general as gen
+
+r = 45
 
 
 def threshold_classifier(x, type, threshold=None, error=False):
@@ -179,7 +181,7 @@ def thresholding_error(N, threshold=None, plot=False, dataset=None):
 def plot_thresholding_error(error, batch_size, threshold=None, std=None):
     if threshold is not None:
         if std is None:
-            fig, ax = plt.subplots(1, len(threshold), figsize=(12, 3))
+            fig, ax = plt.subplots(1, len(threshold), figsize=(20,20))
             errors = ['Analytical error classifier A', 'Numerical error classifier A', 'Analytical error classifier B',
                       'Numerical error classifier B']
             for i in range(len(threshold)):
@@ -195,13 +197,14 @@ def plot_thresholding_error(error, batch_size, threshold=None, std=None):
                 ax[i].legend(errors, fontsize='xx-small')
                 ax[i].tick_params(axis='both', labelsize=5)
                 ax[i].set_xlabel("Batch size", fontsize=7)
-                ax[i].set_xlim(0, batch_size[-1])
-                ax[i].set_xticks(batch_size)
+                ax[i].set_xlim(-1000, batch_size[-1] + 1000)
+                ax[i].set_xticks(batch_size[1:len(batch_size)])
                 ax[i].set_ylabel("Error", fontsize=7)
                 ax[i].set_ylim(0, 1)
                 ax[i].set_yticks(np.linspace(0, 1, 5))
+                plt.setp(ax[i].get_xticklabels(), rotation=r, horizontalalignment='right')
         else:
-            fig, ax = plt.subplots(1, len(threshold) + 2, figsize=(12, 3))
+            fig, ax = plt.subplots(1, len(threshold) + 2, figsize=(20,20))
             errors = ['A.E C-A', 'N.E C-A', 'A.E C-B',
                       'N.E C-B']
 
@@ -228,11 +231,12 @@ def plot_thresholding_error(error, batch_size, threshold=None, std=None):
                 ax[i].legend(errors, fontsize='xx-small', loc='upper right')
                 ax[i].tick_params(axis='both', labelsize=5)
                 ax[i].set_xlabel("Batch size", fontsize=7)
-                ax[i].set_xlim(0, batch_size[-1])
-                ax[i].set_xticks(batch_size)
+                ax[i].set_xlim(-1000, batch_size[-1] + 1000)
+                ax[i].set_xticks(batch_size[1:len(batch_size)])
                 ax[i].set_ylabel("Error", fontsize=7)
                 ax[i].set_ylim(0, 1)
                 ax[i].set_yticks(np.linspace(0, 1, 5))
+                plt.setp(ax[i].get_xticklabels(), rotation=r, horizontalalignment='right')
 
                 for k in range(len(batch_size)):
                     # Dictionary to array
@@ -250,11 +254,12 @@ def plot_thresholding_error(error, batch_size, threshold=None, std=None):
                     ax[len(threshold)].legend(stds_A, fontsize='xx-small', loc='upper right')
                     ax[len(threshold)].tick_params(axis='both', labelsize=5)
                     ax[len(threshold)].set_xlabel("Batch size", fontsize=7)
-                    ax[len(threshold)].set_xlim(0, batch_size[-1])
-                    ax[len(threshold)].set_xticks(batch_size)
+                    ax[len(threshold)].set_xlim(-1000, batch_size[-1] + 1000)
+                    ax[len(threshold)].set_xticks(batch_size[1:len(batch_size)])
                     ax[len(threshold)].set_ylabel("Standard deviation", fontsize=7)
                     ax[len(threshold)].set_yticks(np.linspace(0, 0.5, 5))
                     ax[len(threshold)].set_ylim(0, 0.5)
+                    plt.setp(ax[len(threshold)].get_xticklabels(), rotation=r, horizontalalignment='right')
 
                     ax[len(threshold) + 1].errorbar(batch_size.tolist(), a_error_B, yerr=std_a_error_B, fmt='.',
                                                     markersize=5, alpha=0.7)
@@ -263,11 +268,12 @@ def plot_thresholding_error(error, batch_size, threshold=None, std=None):
                     ax[len(threshold) + 1].legend(stds_B, fontsize='xx-small', loc='upper right')
                     ax[len(threshold) + 1].tick_params(axis='both', labelsize=5)
                     ax[len(threshold) + 1].set_xlabel("Batch size", fontsize=7)
-                    ax[len(threshold) + 1].set_xlim(0, batch_size[-1])
-                    ax[len(threshold) + 1].set_xticks(batch_size)
+                    ax[len(threshold) + 1].set_xlim(-1000, batch_size[-1] + 1000)
+                    ax[len(threshold) + 1].set_xticks(batch_size[1:len(batch_size)])
                     ax[len(threshold) + 1].set_ylabel("Standard deviation", fontsize=7)
                     ax[len(threshold) + 1].set_yticks(np.linspace(0.5, 1, 5))
                     ax[len(threshold) + 1].set_ylim(0.5, 1)
+                    plt.setp(ax[len(threshold) + 1].get_xticklabels(), rotation=r, horizontalalignment='right')
 
     else:
         a_error_C = error[0, :]
@@ -278,14 +284,15 @@ def plot_thresholding_error(error, batch_size, threshold=None, std=None):
         stds_C = ('Std. A.E. C-C', 'Std. N.E. C-C')
         stds_D = ('Std. B.E. C-D', 'Std. N.E. C-D')
 
-        fig, ax = plt.subplots(1, 3, figsize=(12, 3))
+        fig, ax = plt.subplots(1, 3, figsize=(20,20))
         ax[0].plot(batch_size, a_error_C, lw=1)
         ax[0].plot(batch_size, num_error_C, lw=1)
         ax[0].plot(batch_size, a_error_D, lw=1)
         ax[0].plot(batch_size, num_error_D, lw=1)
         ax[0].set_ylabel("Error", fontsize=7)
-        ax[0].set_xlim(0, batch_size[-1])
+        ax[0].set_xlim(-1000, batch_size[-1] + 1000)
         ax[0].set_ylim(0, 1)
+        plt.setp(ax[0].get_xticklabels(), rotation=r, horizontalalignment='right')
 
         for k in range(len(batch_size)):
             std_a_error_C = std[0, k]
@@ -298,22 +305,24 @@ def plot_thresholding_error(error, batch_size, threshold=None, std=None):
             ax[1].legend(stds_C, fontsize='xx-small', loc='upper right')
             ax[1].tick_params(axis='both', labelsize=5)
             ax[1].set_xlabel("Batch size", fontsize=7)
-            ax[1].set_xlim(0, batch_size[-1])
-            ax[1].set_xticks(batch_size)
+            ax[1].set_xlim(-1000, batch_size[-1] + 1000)
+            ax[1].set_xticks(batch_size[1:len(batch_size)])
             ax[1].set_ylabel("Standard deviation", fontsize=7)
             ax[1].set_yticks(np.linspace(0.3, 0.7, 5))
             ax[1].set_ylim(0.3, 0.7)
+            plt.setp(ax[1].get_xticklabels(), rotation=r, horizontalalignment='right')
 
-            ax[1 + 1].errorbar(batch_size.tolist(), a_error_D, yerr=std_a_error_D, fmt='.', markersize=5, alpha=0.7)
-            ax[1 + 1].errorbar(batch_size.tolist(), num_error_D, yerr=std_num_error_D, fmt='.', markersize=5, alpha=0.7)
-            ax[1 + 1].legend(stds_D, fontsize='xx-small', loc='upper right')
-            ax[1 + 1].tick_params(axis='both', labelsize=5)
-            ax[1 + 1].set_xlabel("Batch size", fontsize=7)
-            ax[1 + 1].set_xlim(0, batch_size[-1])
-            ax[1 + 1].set_xticks(batch_size)
-            ax[1 + 1].set_ylabel("Standard deviation", fontsize=7)
-            ax[1 + 1].set_yticks(np.linspace(0.3, 0.7, 5))
-            ax[1 + 1].set_ylim(0.3, 0.7)
+            ax[2].errorbar(batch_size.tolist(), a_error_D, yerr=std_a_error_D, fmt='.', markersize=5, alpha=0.7)
+            ax[2].errorbar(batch_size.tolist(), num_error_D, yerr=std_num_error_D, fmt='.', markersize=5, alpha=0.7)
+            ax[2].legend(stds_D, fontsize='xx-small', loc='upper right')
+            ax[2].tick_params(axis='both', labelsize=5)
+            ax[2].set_xlabel("Batch size", fontsize=7)
+            ax[2].set_xlim(-1000, batch_size[-1] + 1000)
+            ax[2].set_xticks(batch_size[1:len(batch_size)])
+            ax[2].set_ylabel("Standard deviation", fontsize=7)
+            ax[2].set_yticks(np.linspace(0.3, 0.7, 5))
+            ax[2].set_ylim(0.3, 0.7)
+            plt.setp(ax[2].get_xticklabels(), rotation=r, horizontalalignment='right')
 
     plt.subplots_adjust(wspace=0.5)
     plt.show()
