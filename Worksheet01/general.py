@@ -10,13 +10,10 @@ def create_data(N):
 
     u = np.random.uniform(size=N)
     X = np.zeros(N)
-
-    for i in range(N):
-        if Y[i] == 0:
-            X[i] = 1 - np.sqrt(1 - u[i])
-        else:
-            X[i] = np.array(np.sqrt(u[i]))
-
+    idx0 = Y == 0
+    idx1 = ~idx0
+    X[idx0] = 1 - np.sqrt(1 - u[idx0])
+    X[idx1] = np.sqrt(u[idx1])
     data_set = np.stack((X, Y), axis=1)
     return data_set
 
