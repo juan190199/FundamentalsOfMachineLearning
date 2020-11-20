@@ -81,38 +81,60 @@ def thresholding_error(N, threshold=None, plot=False, dataset=None):
                             batch_dict['Batch: ' + str(N[k])][3, j] = num_error_B
 
         # Calculate mean and standard deviation pro batch size
-        for k in range(len(N)):
-            for j in range(len(threshold)):
-                mean_error['Mean error for batch size {}: '.format(N[k])] = np.mean(
+        for j in range(len(threshold)):
+            for k in range(len(N)):
+                mean_error['Mean error for batch size {}: '.format(threshold[j])] = np.mean(
                     batch_dict['Batch: ' + str(N[k])][0, :])
-                mean_error['Mean error for batch size {}: '.format(N[k])] = np.mean(
+                mean_error['Mean error for batch size {}: '.format(threshold[j])] = np.mean(
                     batch_dict['Batch: ' + str(N[k])][1, :])
-                mean_error['Mean error for batch size {}: '.format(N[k])] = np.mean(
+                mean_error['Mean error for batch size {}: '.format(threshold[j])] = np.mean(
                     batch_dict['Batch: ' + str(N[k])][2, :])
-                mean_error['Mean error for batch size {}: '.format(N[k])] = np.mean(
+                mean_error['Mean error for batch size {}: '.format(threshold[j])] = np.mean(
                     batch_dict['Batch: ' + str(N[k])][3, :])
 
-                std_error['Std. error for batch size {}: '.format(N[k])][0] = np.std(
+        for j in range(len(threshold)):
+            for k in range(len(N)):
+                mean_error['Std. deviation error for batch size {}: '.format(threshold[j])] = np.std(
                     batch_dict['Batch: ' + str(N[k])][0, :])
-                std_error['Std. error for batch size {}: '.format(N[k])][1] = np.std(
+                mean_error['Std. deviation error for batch size {}: '.format(threshold[j])] = np.std(
                     batch_dict['Batch: ' + str(N[k])][1, :])
-                std_error['Std. error for batch size {}: '.format(N[k])][2] = np.std(
+                mean_error['Std. deviation error for batch size {}: '.format(threshold[j])] = np.std(
                     batch_dict['Batch: ' + str(N[k])][2, :])
-                std_error['Std. error for batch size {}: '.format(N[k])][3] = np.std(
+                mean_error['Std. deviation error for batch size {}: '.format(threshold[j])] = np.std(
                     batch_dict['Batch: ' + str(N[k])][3, :])
+
+        # for k in range(len(N)):
+        #     for j in range(len(threshold)):
+        #         mean_error['Mean error for batch size {}: '.format(N[k])] = np.mean(
+        #             batch_dict['Batch: ' + str(N[k])][0, :])
+        #         mean_error['Mean error for batch size {}: '.format(N[k])] = np.mean(
+        #             batch_dict['Batch: ' + str(N[k])][1, :])
+        #         mean_error['Mean error for batch size {}: '.format(N[k])] = np.mean(
+        #             batch_dict['Batch: ' + str(N[k])][2, :])
+        #         mean_error['Mean error for batch size {}: '.format(N[k])] = np.mean(
+        #             batch_dict['Batch: ' + str(N[k])][3, :])
+        #
+        #         std_error['Std. error for batch size {}: '.format(N[k])][0] = np.std(
+        #             batch_dict['Batch: ' + str(N[k])][0, :])
+        #         std_error['Std. error for batch size {}: '.format(N[k])][1] = np.std(
+        #             batch_dict['Batch: ' + str(N[k])][1, :])
+        #         std_error['Std. error for batch size {}: '.format(N[k])][2] = np.std(
+        #             batch_dict['Batch: ' + str(N[k])][2, :])
+        #         std_error['Std. error for batch size {}: '.format(N[k])][3] = np.std(
+        #             batch_dict['Batch: ' + str(N[k])][3, :])
 
         print(
             "Data set: {}, Threshold: {}, Batch size: {}, Classifier: A. Standard deviation analytical error: {}".format(
-                dataset, j, N[k], std_error['Std. error for batch size {}: '.format(N[k])][0]))
+                dataset, threshold[j], N[k], std_error['Std. error for batch size {}: '.format(N[k])][0]))
         print(
             "Data set: {}, Threshold: {}, Batch size: {}, Classifier: A. Standard deviation numerical error: {}".format(
-                dataset, j, N[k], std_error['Std. error for batch size {}: '.format(N[k])][1]))
+                dataset, threshold[j], N[k], std_error['Std. error for batch size {}: '.format(N[k])][1]))
         print(
             "Data set: {}, Threshold: {}, Batch size: {}, Classifier: B. Standard deviation analytical error: {}".format(
-                dataset, j, N[k], std_error['Std. error for batch size {}: '.format(N[k])][2]))
+                dataset, threshold[j], N[k], std_error['Std. error for batch size {}: '.format(N[k])][2]))
         print(
             "Data set: {}, Threshold: {}, Batch size: {}, Classifier: B. Standard deviation numerical error: {} \n".format(
-                dataset, j, N[k], std_error['Std. error for batch size {}: '.format(N[k])][3]))
+                dataset, threshold[j], N[k], std_error['Std. error for batch size {}: '.format(N[k])][3]))
 
         plot_thresholding_error(thr_dict, N, threshold, std_error)
 
@@ -372,7 +394,7 @@ def nearest_neighbor(represent, test_set, metric):
 
 
 def task1():
-    data = gen.create_data(500)
+    data = gen.create_data(30000)
     gen.plot_data(data)
 
 
@@ -401,7 +423,7 @@ def task4():
 
     for metric in metrics:
         for i in range(100):
-            represent = gen.create_data(100)
+            represent = gen.create_data(700)
             num_errors[i] = nearest_neighbor(represent, test_set, metric)
 
         print('Metric: {}. Mean numerical errors: {}'.format(metric, np.mean(num_errors)))
@@ -409,10 +431,10 @@ def task4():
 
 
 def main():
-    # task1()
+    task1()
     # task2()
     # task3()
-    task4()
+    # task4()
 
 
 if __name__ == '__main__':
