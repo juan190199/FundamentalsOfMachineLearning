@@ -181,7 +181,7 @@ def thresholding_error(N, threshold=None, plot=False, dataset=None):
 def plot_thresholding_error(error, batch_size, threshold=None, std=None):
     if threshold is not None:
         if std is None:
-            fig, ax = plt.subplots(1, len(threshold), figsize=(20,20))
+            fig, ax = plt.subplots(1, len(threshold), figsize=(20, 20))
             errors = ['Analytical error classifier A', 'Numerical error classifier A', 'Analytical error classifier B',
                       'Numerical error classifier B']
             for i in range(len(threshold)):
@@ -204,7 +204,7 @@ def plot_thresholding_error(error, batch_size, threshold=None, std=None):
                 ax[i].set_yticks(np.linspace(0, 1, 5))
                 plt.setp(ax[i].get_xticklabels(), rotation=r, horizontalalignment='right')
         else:
-            fig, ax = plt.subplots(1, len(threshold) + 2, figsize=(20,20))
+            fig, ax = plt.subplots(1, len(threshold) + 2, figsize=(20, 20))
             errors = ['A.E C-A', 'N.E C-A', 'A.E C-B',
                       'N.E C-B']
 
@@ -284,7 +284,7 @@ def plot_thresholding_error(error, batch_size, threshold=None, std=None):
         stds_C = ('Std. A.E. C-C', 'Std. N.E. C-C')
         stds_D = ('Std. B.E. C-D', 'Std. N.E. C-D')
 
-        fig, ax = plt.subplots(1, 3, figsize=(20,20))
+        fig, ax = plt.subplots(1, 3, figsize=(20, 20))
         ax[0].plot(batch_size, a_error_C, lw=1)
         ax[0].plot(batch_size, num_error_C, lw=1)
         ax[0].plot(batch_size, a_error_D, lw=1)
@@ -331,22 +331,29 @@ def plot_thresholding_error(error, batch_size, threshold=None, std=None):
 def nn_predict(represent, test_set, metric):
     if metric == 'euclidean':
         prediction = np.zeros(test_set.shape[0])
+        n_represent = np.zeros(test_set.shape[0], dtype=int)
         for i in range(test_set.shape[0]):
-            if gen.euclidean_distance(represent[0, 0], test_set[i, 0]) < gen.euclidean_distance(represent[1, 0], test_set[i, 0]):
-                prediction[i] = represent[0, 1]
-            if gen.euclidean_distance(represent[0, 0], test_set[i, 0]) > gen.euclidean_distance(represent[1, 0], test_set[i, 0]):
-                prediction[i] = represent[1, 1]
-            else:
-                prediction[i] = np.random.randint(0, 2, 1)
+            for j in range(1, represent.shape[0]):
+                if gen.euclidean_distance(represent[n_represent[i], 0], test_set[i, 0]) > \
+                        gen.euclidean_distance(represent[j, 0], test_set[i, 0]):
+                    n_represent[i] = j
+                else:
+                    pass
+        for i in range(test_set.shape[0]):
+            prediction[i] = represent[n_represent[i], 1]
+
     if metric == 'manhattan':
         prediction = np.zeros(test_set.shape[0])
+        n_represent = np.zeros(test_set.shape[0], dtype=int)
         for i in range(test_set.shape[0]):
-            if gen.manhattan_distance(represent[0, 0], test_set[i, 0]) < gen.euclidean_distance(represent[1, 0], test_set[i, 0]):
-                prediction[i] = represent[0, 1]
-            if gen.manhattan_distance(represent[0, 0], test_set[i, 0]) > gen.euclidean_distance(represent[1, 0], test_set[i, 0]):
-                prediction[i] = represent[1, 1]
-            else:
-                prediction[i] = np.random.randint(0, 2, 1)
+            for j in range(1, represent.shape[0]):
+                if gen.manhattan_distance(represent[n_represent[i], 0], test_set[i, 0]) > \
+                        gen.manhattan_distance(represent[j, 0], test_set[i, 0]):
+                    n_represent[i] = j
+                else:
+                    pass
+        for i in range(test_set.shape[0]):
+            prediction[i] = represent[n_represent[i], 1]
 
     if metric == 'weighted euclidean':
         pass
@@ -390,16 +397,23 @@ def task4():
             num_errors[i] = nearest_neighbor(represent, test_set, metric)
 
         print('Metric: {}. Mean numerical errors: {}'.format(metric, np.mean(num_errors)))
-        print('Metric: {}. Standard deviation numerical errors: {}'.format(metric, np.std(num_errors)))
+        print('Metric: {}. Standard deviation numerical errors: {} \n'.format(metric, np.std(num_errors)))
+
+    for metric in metrics:
+        for i in range(100):
+            represent = gen.create_data(100)
+            num_errors[i] = nearest_neighbor(represent, test_set, metric)
+
+        print('Metric: {}. Mean numerical errors: {}'.format(metric, np.mean(num_errors)))
+        print('Metric: {}. Standard deviation numerical errors: {} \n'.format(metric, np.std(num_errors)))
 
 
 def main():
-    task1()
-    task2()
-    task3()
+    # task1()
+    # task2()
+    # task3()
     task4()
 
 
 if __name__ == '__main__':
     main()
-
