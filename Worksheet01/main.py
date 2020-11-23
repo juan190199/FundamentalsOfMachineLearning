@@ -7,6 +7,14 @@ r = 45
 
 
 def threshold_classifier(x, type, threshold=None, error=False):
+    """
+
+    :param x:
+    :param type:
+    :param threshold:
+    :param error:
+    :return:
+    """
     if type == 'A':
         if error is True:
             return 1 / 4 + (threshold - 1 / 2) ** 2
@@ -431,8 +439,8 @@ def task4():
 
 
 def main():
-    task1()
-    # task2()
+    # task1()
+    task2()
     # task3()
     # task4()
 
