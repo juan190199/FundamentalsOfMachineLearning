@@ -2,8 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="eea9658e-a092-48be-a0f3-fd5a550aa78a" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/Worksheet01.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/Worksheet01.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/general.py" beforeDir="false" afterPath="$PROJECT_DIR$/general.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -29,6 +30,7 @@
   </component>
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
@@ -85,7 +87,7 @@
       <option name="presentableId" value="Default" />
       <updated>1606177442015</updated>
       <workItem from="1606177443031" duration="43000" />
-      <workItem from="1606178039711" duration="380000" />
+      <workItem from="1606178039711" duration="1620000" />
     </task>
     <servers />
   </component>
@@ -97,9 +99,44 @@
       <screen x="0" y="0" width="1440" height="900" />
     </state>
     <state x="184" y="109" width="1071" height="706" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1440.900@0.0.1440.900" timestamp="1606178458754" />
+    <state width="1398" height="304" key="GridCell.Tab.0.bottom" timestamp="1606179903787">
+      <screen x="0" y="0" width="1440" height="900" />
+    </state>
+    <state width="1398" height="304" key="GridCell.Tab.0.bottom/0.0.1440.900@0.0.1440.900" timestamp="1606179903787" />
+    <state width="1398" height="304" key="GridCell.Tab.0.center" timestamp="1606179903786">
+      <screen x="0" y="0" width="1440" height="900" />
+    </state>
+    <state width="1398" height="304" key="GridCell.Tab.0.center/0.0.1440.900@0.0.1440.900" timestamp="1606179903786" />
+    <state width="1398" height="304" key="GridCell.Tab.0.left" timestamp="1606179903786">
+      <screen x="0" y="0" width="1440" height="900" />
+    </state>
+    <state width="1398" height="304" key="GridCell.Tab.0.left/0.0.1440.900@0.0.1440.900" timestamp="1606179903786" />
+    <state width="1398" height="304" key="GridCell.Tab.0.right" timestamp="1606179903787">
+      <screen x="0" y="0" width="1440" height="900" />
+    </state>
+    <state width="1398" height="304" key="GridCell.Tab.0.right/0.0.1440.900@0.0.1440.900" timestamp="1606179903787" />
+    <state width="1398" height="304" key="GridCell.Tab.1.bottom" timestamp="1606179903788">
+      <screen x="0" y="0" width="1440" height="900" />
+    </state>
+    <state width="1398" height="304" key="GridCell.Tab.1.bottom/0.0.1440.900@0.0.1440.900" timestamp="1606179903788" />
+    <state width="1398" height="304" key="GridCell.Tab.1.center" timestamp="1606179903788">
+      <screen x="0" y="0" width="1440" height="900" />
+    </state>
+    <state width="1398" height="304" key="GridCell.Tab.1.center/0.0.1440.900@0.0.1440.900" timestamp="1606179903788" />
+    <state width="1398" height="304" key="GridCell.Tab.1.left" timestamp="1606179903787">
+      <screen x="0" y="0" width="1440" height="900" />
+    </state>
+    <state width="1398" height="304" key="GridCell.Tab.1.left/0.0.1440.900@0.0.1440.900" timestamp="1606179903787" />
+    <state width="1398" height="304" key="GridCell.Tab.1.right" timestamp="1606179903788">
+      <screen x="0" y="0" width="1440" height="900" />
+    </state>
+    <state width="1398" height="304" key="GridCell.Tab.1.right/0.0.1440.900@0.0.1440.900" timestamp="1606179903788" />
     <state x="229" y="86" key="SettingsEditor" timestamp="1606178256967">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
     <state x="229" y="86" key="SettingsEditor/0.0.1440.900@0.0.1440.900" timestamp="1606178256967" />
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/Worksheet01$main.coverage" NAME="main Coverage Results" MODIFIED="1606179829670" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>

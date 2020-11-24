@@ -35,13 +35,29 @@ def threshold_classifier(X, type, threshold=None, error=False):
             return np.ones(len(X))
 
 
+def calculate_ose(test_set, prediction):
+    """
+    Calculate out-of-sample error
+    :param test_set:
+    :param prediction:
+    :return:
+    """
+    n_errors = np.sum(np.abs(np.subtract(prediction, test_set[:, 1])))
+    ose = n_errors/test_set.shape[0]
+    return ose
+
+
 def task1():
     data = gen.create_data(30000)
     gen.plot_data(data)
 
 
 def task2():
-    pass
+    thresholds = [0.2, 0.5, 0.6]
+    test_set = gen.create_data(1000)
+    prediction = threshold_classifier(test_set[:, 0], type='A', threshold=0.5)
+    ose = calculate_ose(test_set, prediction)
+    print(ose)
 
 
 def task3():
@@ -53,10 +69,10 @@ def task4():
 
 
 def main():
-    task1()
+    # task1()
     task2()
-    task3()
-    task4()
+    # task3()
+    # task4()
 
 
 if __name__ == '__main__':
