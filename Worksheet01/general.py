@@ -14,7 +14,7 @@ def create_data(N):
             Y = np.random.randint(0, 2, size=N)  # Sample instance labels from prior 1/2
 
     u = np.random.uniform(size=N)
-    X = np.zeros(N)
+    X = np.empty(N)
     idx0 = Y == 0
     idx1 = ~idx0
     X[idx0] = 1 - np.sqrt(1 - u[idx0])

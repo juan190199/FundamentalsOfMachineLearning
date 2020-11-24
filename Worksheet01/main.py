@@ -48,7 +48,7 @@ def calculate_error_thresholding_classifier(type, error=False, batch=None, n_dat
     :return:
     """
     if error is False:
-        oses = np.zeros(n_data_sets)
+        oses = np.empty(n_data_sets)
         for i in range(n_data_sets):
             test_set = gen.create_data(batch)
             prediction = threshold_classifier(type=type, X=test_set[:, 0], threshold=threshold)
@@ -100,7 +100,7 @@ def nn_classifier(training_set, test_set):
 
     :return:
     """
-    prediction = np.zeros(test_set.shape[0])
+    prediction = np.empty(test_set.shape[0])
     for i in range(test_set.shape[0]):
         diff = np.abs(training_set[:, 0] - test_set[i, 0])
         idx = np.argmin(diff)
@@ -110,7 +110,7 @@ def nn_classifier(training_set, test_set):
 
 def calculate_error_nn_classifier(size_data, batch_size, n_data_sets):
     test_set = gen.create_data(batch_size)
-    oses = np.zeros(n_data_sets)
+    oses = np.empty(n_data_sets)
     for i in range(n_data_sets):
         data = gen.create_data(size_data)
         prediction = nn_classifier(data, test_set)
