@@ -3,6 +3,11 @@ from matplotlib import pyplot as plt
 
 
 def create_data(N):
+    """
+    Create data using inverse transform method (Explained in Task1.pdf)
+    :param N: batch size of the data to be created
+    :return:
+    """
     Y = np.random.randint(0, 2, size=N)  # Sample instance labels from prior 1/2
     if N == 2:
         while np.all(Y == Y[0]):
