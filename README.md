@@ -7,4 +7,8 @@
   - Bayesian Decision Theory
   - Classification by Thresholding
   - Baseline classifiers
-  - Nearest Neighbors Classification
+  - Nearest Neighbor Classifier
+  - k-Nearest Neighbor Classifier
+  - Cross Validation
+  
+  
