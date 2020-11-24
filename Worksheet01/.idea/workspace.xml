@@ -122,6 +122,7 @@
       <workItem from="1606212260063" duration="6000" />
       <workItem from="1606214103248" duration="3953000" />
       <workItem from="1606221552054" duration="5999000" />
+      <workItem from="1606232224575" duration="59000" />
     </task>
     <task id="LOCAL-00001" summary="Begin of task 2: calculate_ose method created">
       <created>1606180092576</created>
@@ -165,7 +166,14 @@
       <option name="project" value="LOCAL" />
       <updated>1606230674826</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="Distances in general.py were eliminated">
+      <created>1606232272674</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1606232272674</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -190,17 +198,18 @@
     <MESSAGE value="Plots task 2 done" />
     <MESSAGE value="Task 3 done" />
     <MESSAGE value="Worksheet 01 done" />
-    <option name="LAST_COMMIT_MESSAGE" value="Worksheet 01 done" />
+    <MESSAGE value="Distances in general.py were eliminated" />
+    <option name="LAST_COMMIT_MESSAGE" value="Distances in general.py were eliminated" />
   </component>
   <component name="WindowStateProjectService">
     <state x="184" y="109" width="1071" height="706" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1606178458754">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
     <state x="184" y="109" width="1071" height="706" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1440.900@0.0.1440.900" timestamp="1606178458754" />
-    <state x="126" y="24" key="CommitChangelistDialog2" timestamp="1606230674727">
+    <state x="126" y="24" key="CommitChangelistDialog2" timestamp="1606232272601">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
-    <state x="126" y="24" key="CommitChangelistDialog2/0.0.1440.900/1440.-180.1920.1080@0.0.1440.900" timestamp="1606230674727" />
+    <state x="126" y="24" key="CommitChangelistDialog2/0.0.1440.900/1440.-180.1920.1080@0.0.1440.900" timestamp="1606232272601" />
     <state x="126" y="24" key="CommitChangelistDialog2/0.0.1440.900@0.0.1440.900" timestamp="1606180122428" />
     <state width="1398" height="279" key="GridCell.Tab.0.bottom" timestamp="1606230729900">
       <screen x="0" y="0" width="1440" height="900" />
@@ -255,10 +264,10 @@
     </state>
     <state x="229" y="86" key="SettingsEditor/0.0.1440.900/1440.-180.1920.1080@0.0.1440.900" timestamp="1606211765145" />
     <state x="229" y="86" key="SettingsEditor/0.0.1440.900@0.0.1440.900" timestamp="1606178256967" />
-    <state x="320" y="187" key="Vcs.Push.Dialog.v2" timestamp="1606230679473">
+    <state x="320" y="187" key="Vcs.Push.Dialog.v2" timestamp="1606232281610">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
-    <state x="320" y="187" key="Vcs.Push.Dialog.v2/0.0.1440.900/1440.-180.1920.1080@0.0.1440.900" timestamp="1606230679473" />
+    <state x="320" y="187" key="Vcs.Push.Dialog.v2/0.0.1440.900/1440.-180.1920.1080@0.0.1440.900" timestamp="1606232281610" />
     <state x="320" y="187" key="Vcs.Push.Dialog.v2/0.0.1440.900@0.0.1440.900" timestamp="1606180125962" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
