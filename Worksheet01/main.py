@@ -37,7 +37,7 @@ def threshold_classifier(type, X=None, threshold=None, error=False):
             return np.ones(len(X))
 
 
-def calculate_error(type, error=False, batch=None, n_data_sets=None, threshold=None):
+def calculate_error_thresholding_classifier(type, error=False, batch=None, n_data_sets=None, threshold=None):
     """
     Calculate out-of-sample errors given number of data sets
     :param type: Classifier type
@@ -55,7 +55,6 @@ def calculate_error(type, error=False, batch=None, n_data_sets=None, threshold=N
             n_errors = np.sum(np.abs(np.subtract(prediction, test_set[:, 1])))
             ose = n_errors / batch
             oses[i] = ose
-
         return oses
     else:
         a_error = threshold_classifier(type=type, error=error, threshold=threshold)
@@ -72,8 +71,8 @@ def plot_error_rate(dfs, thresholds=None):
         plt.show()
     else:
         cont_thresholds = np.linspace(0, 1, 100)
-        error_A = calculate_error(type='A', error=True, threshold=cont_thresholds)
-        error_B = calculate_error(type='B', error=True, threshold=cont_thresholds)
+        error_A = calculate_error_thresholding_classifier(type='A', error=True, threshold=cont_thresholds)
+        error_B = calculate_error_thresholding_classifier(type='B', error=True, threshold=cont_thresholds)
         errors = [error_A, error_B]
 
         for name, df, true_error in zip(["A", "B"], dfs, errors):
@@ -96,6 +95,31 @@ def plot_error_rate(dfs, thresholds=None):
             plt.show()
 
 
+def nn_classifier(training_set, test_set):
+    """
+
+    :return:
+    """
+    prediction = np.zeros(test_set.shape[0])
+    for i in range(test_set.shape[0]):
+        diff = np.abs(training_set[:, 0] - test_set[i, 0])
+        idx = np.argmin(diff)
+        prediction[i] = training_set[idx, 1]
+    return prediction
+
+
+def calculate_error_nn_classifier(size_data, batch_size, n_data_sets):
+    test_set = gen.create_data(batch_size)
+    oses = np.zeros(n_data_sets)
+    for i in range(n_data_sets):
+        data = gen.create_data(size_data)
+        prediction = nn_classifier(data, test_set)
+        n_errors = np.sum(np.abs(np.subtract(prediction, test_set[:, 1])))
+        ose = n_errors / batch_size
+        oses[i] = ose
+    return oses
+
+
 def task1():
     data = gen.create_data(30000)
     gen.plot_data(data)
@@ -110,14 +134,16 @@ def task2():
 
     for threshold in thresholds:
         for batch in batch_sizes:
-            error_rates_A = calculate_error(type='A', batch=batch, n_data_sets=10, threshold=threshold)
+            error_rates_A = calculate_error_thresholding_classifier(type='A', batch=batch, n_data_sets=10,
+                                                                    threshold=threshold)
             classifier_A.append({"$x_0$": threshold,
                                  "Batch size": batch,
                                  "Mean": error_rates_A.mean(),
                                  "Std": error_rates_A.std()
                                  })
 
-            error_rates_B = calculate_error(type='B', batch=batch, n_data_sets=10, threshold=threshold)
+            error_rates_B = calculate_error_thresholding_classifier(type='B', batch=batch, n_data_sets=10,
+                                                                    threshold=threshold)
             classifier_B.append({"$x_0$": threshold,
                                  "Batch size": batch,
                                  "Mean": error_rates_B.mean(),
@@ -142,13 +168,13 @@ def task3():
     classifier_D = []
 
     for batch in batch_sizes:
-        error_rates_C = calculate_error(type='C', batch=batch, n_data_sets=10)
+        error_rates_C = calculate_error_thresholding_classifier(type='C', batch=batch, n_data_sets=10)
         classifier_C.append({"Batch size": batch,
                              "Mean": error_rates_C.mean(),
                              "Std": error_rates_C.std()
                              })
 
-        error_rates_D = calculate_error(type='D', batch=batch, n_data_sets=10)
+        error_rates_D = calculate_error_thresholding_classifier(type='D', batch=batch, n_data_sets=10)
         classifier_D.append({"Batch size": batch,
                              "Mean": error_rates_D.mean(),
                              "Std": error_rates_D.std()
@@ -166,14 +192,21 @@ def task3():
 
 
 def task4():
-    pass
+    size_data = 2
+    batch_size = 10000
+    oses = calculate_error_nn_classifier(size_data=size_data, batch_size=batch_size, n_data_sets=300)
+    print(f'Average error: {np.mean(oses):.3f}% ± {np.std(oses):.3f}%')
+
+    size_data = 100
+    oses = calculate_error_nn_classifier(size_data=size_data, batch_size=batch_size, n_data_sets=300)
+    print(f'Average error: {np.mean(oses):.3f}% ± {np.std(oses):.3f}%')
 
 
 def main():
-    # task1()
-    # task2()
+    task1()
+    task2()
     task3()
-    # task4()
+    task4()
 
 
 if __name__ == '__main__':

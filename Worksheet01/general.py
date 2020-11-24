@@ -66,3 +66,7 @@ def manhattan_distance(x1, x2):
 
 def weighted_euclidean_distance():
     pass
+
+
+if __name__ == '__main__':
+    main()
