@@ -1,6 +1,8 @@
 import general as gen
 
 import numpy as np
+import pandas as pd
+from IPython.display import display
 
 
 def threshold_classifier(X, type, threshold=None, error=False):
@@ -35,16 +37,24 @@ def threshold_classifier(X, type, threshold=None, error=False):
             return np.ones(len(X))
 
 
-def calculate_ose(test_set, prediction):
+def calculate_ose(type, batch, n_data_sets, threshold=None):
     """
-    Calculate out-of-sample error
-    :param test_set:
-    :param prediction:
+    Calculate out-of-sample errors given number of data sets
+    :param type: Classifier type
+    :param batch: size of the test set
+    :param n_data_sets:
+    :param threshold: threshold of the classifier
     :return:
     """
-    n_errors = np.sum(np.abs(np.subtract(prediction, test_set[:, 1])))
-    ose = n_errors/test_set.shape[0]
-    return ose
+    oses = np.zeros(n_data_sets)
+    for i in range(n_data_sets):
+        test_set = gen.create_data(batch)
+        prediction = threshold_classifier(test_set[:, 0], type=type, threshold=threshold)
+        n_errors = np.sum(np.abs(np.subtract(prediction, test_set[:, 1])))
+        ose = n_errors / batch
+        oses[i] = ose
+
+    return oses
 
 
 def task1():
@@ -54,10 +64,30 @@ def task1():
 
 def task2():
     thresholds = [0.2, 0.5, 0.6]
-    test_set = gen.create_data(1000)
-    prediction = threshold_classifier(test_set[:, 0], type='A', threshold=0.5)
-    ose = calculate_ose(test_set, prediction)
-    print(ose)
+    batch_sizes = [10, 100, 10000, 10000]
+
+    classifier_A = []
+    classifier_B = []
+
+    for threshold in thresholds:
+        for batch in batch_sizes:
+            error_rates_A = calculate_ose(type='A', batch=batch, n_data_sets=10, threshold=threshold)
+            classifier_A.append({"$x_0$": threshold,
+                                 "Batch size": batch,
+                                 "Mean": error_rates_A.mean(),
+                                 "Std": error_rates_A.std()
+                                 })
+
+            error_rates_B = calculate_ose(type='B', batch=batch, n_data_sets=10, threshold=threshold)
+            classifier_B.append({"$x_0$": threshold,
+                                 "Batch size": batch,
+                                 "Mean": error_rates_B.mean(),
+                                 "Std": error_rates_B.std()
+                                 })
+
+    df_A = pd.DataFrame(classifier_A)
+    df_A = df_A.groupby(["$x_0$", "Batch size"]).first().unstack()
+    df_A
 
 
 def task3():
