@@ -54,19 +54,3 @@ def plot_data(data):
     ax[4].set_title(r'Likelihood for $Y=1$')
 
     plt.show()
-
-
-def euclidean_distance(x1, x2):
-    return np.sqrt(np.sum(np.subtract(x1, x2) ** 2))
-
-
-def manhattan_distance(x1, x2):
-    return np.sum(np.abs(np.subtract(x1, x2)))
-
-
-def weighted_euclidean_distance():
-    pass
-
-
-if __name__ == '__main__':
-    main()
