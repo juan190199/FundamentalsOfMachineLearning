@@ -62,30 +62,38 @@ def calculate_error(type, error=False, batch=None, n_data_sets=None, threshold=N
         return a_error
 
 
-def plot_error_rate(dfs, thresholds):
-    cont_thresholds = np.linspace(0, 1, 100)
-    error_A = calculate_error(type='A', error=True, threshold=cont_thresholds)
-    error_B = calculate_error(type='B', error=True, threshold=cont_thresholds)
-    errors = [error_A, error_B]
-
-    for name, df, true_error in zip(["A", "B"], dfs, errors):
-        fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 5))
-        plt.suptitle(f"Classifier {name}")
-
-        plt.sca(ax1)
-        plt.ylim(0, 1)
-        plt.title("Error rate mean")
-        df["Mean"].plot(marker="o", yerr=df["Std"], lw=1, ax=ax1)
-        plt.plot(cont_thresholds, true_error, "k--")
-        plt.xticks([0] + thresholds + [1])
-
-        plt.sca(ax2)
-        plt.title("Error rate std")
-        df["Std"].T.plot(marker="o", ax=ax2, logx=True, logy=True)
-
-        plt.tight_layout()
-
+def plot_error_rate(dfs, thresholds=None):
+    if thresholds is None:
+        df_C = dfs[0]
+        df_D = dfs[1]
+        df_C.plot(y="Mean", yerr="Std", logx=True, color="C0", ax=plt.gca(), label="Classifier C")
+        df_D.plot(y="Mean", yerr="Std", logx=True, color="C1", ax=plt.gca(), label="Classifier D")
+        plt.title("Error for classifier C and D")
         plt.show()
+    else:
+        cont_thresholds = np.linspace(0, 1, 100)
+        error_A = calculate_error(type='A', error=True, threshold=cont_thresholds)
+        error_B = calculate_error(type='B', error=True, threshold=cont_thresholds)
+        errors = [error_A, error_B]
+
+        for name, df, true_error in zip(["A", "B"], dfs, errors):
+            fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 5))
+            plt.suptitle(f"Classifier {name}")
+
+            plt.sca(ax1)
+            plt.ylim(0, 1)
+            plt.title("Error rate mean")
+            df["Mean"].plot(marker="o", yerr=df["Std"], lw=1, ax=ax1)
+            plt.plot(cont_thresholds, true_error, "k--")
+            plt.xticks([0] + thresholds + [1])
+
+            plt.sca(ax2)
+            plt.title("Error rate std")
+            df["Std"].T.plot(marker="o", ax=ax2, logx=True, logy=True)
+
+            plt.tight_layout()
+
+            plt.show()
 
 
 def task1():
@@ -95,12 +103,10 @@ def task1():
 
 def task2():
     thresholds = [0.2, 0.5, 0.6]
-    batch_sizes = [10, 100, 10000, 10000]
+    batch_sizes = [10, 100, 1000, 10000]
 
     classifier_A = []
     classifier_B = []
-    # error_A = []
-    # error_B = []
 
     for threshold in thresholds:
         for batch in batch_sizes:
@@ -117,12 +123,6 @@ def task2():
                                  "Mean": error_rates_B.mean(),
                                  "Std": error_rates_B.std()
                                  })
-        # error_A.append({"$x_0$": threshold,
-        #                 "error": calculate_error(type='A', error=True, threshold=threshold)
-        #                 })
-        # error_B.append({"$x_0$": threshold,
-        #                 "error": calculate_error(type='B', error=True, threshold=threshold)
-        #                 })
 
     df_A = pd.DataFrame(classifier_A)
     df_A = df_A.groupby(["$x_0$", "Batch size"]).first().unstack()
@@ -136,7 +136,33 @@ def task2():
 
 
 def task3():
-    pass
+    batch_sizes = [10, 100, 1000, 10000]
+
+    classifier_C = []
+    classifier_D = []
+
+    for batch in batch_sizes:
+        error_rates_C = calculate_error(type='C', batch=batch, n_data_sets=10)
+        classifier_C.append({"Batch size": batch,
+                             "Mean": error_rates_C.mean(),
+                             "Std": error_rates_C.std()
+                             })
+
+        error_rates_D = calculate_error(type='D', batch=batch, n_data_sets=10)
+        classifier_D.append({"Batch size": batch,
+                             "Mean": error_rates_D.mean(),
+                             "Std": error_rates_D.std()
+                             })
+
+    df_C = pd.DataFrame(classifier_C)
+    df_C = df_C.groupby(["Batch size"]).first()
+    print(df_C)
+
+    df_D = pd.DataFrame(classifier_D)
+    df_D = df_D.groupby(["Batch size"]).first()
+    print(df_D)
+
+    plot_error_rate([df_C, df_D])
 
 
 def task4():
@@ -145,8 +171,8 @@ def task4():
 
 def main():
     # task1()
-    task2()
-    # task3()
+    # task2()
+    task3()
     # task4()
 
 
