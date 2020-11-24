@@ -3,6 +3,41 @@ from sklearn import model_selection
 import numpy as np
 import matplotlib.pyplot as plt
 
+import general as gen
+
+
+def dist_loop(training, test):
+    """
+
+    :param training: matrix of shape (n_instances, D). n_instances = number of instances in the training set.
+    D = pixels per image
+    :param test: matrix of shape (batch_size, D). batch_size = number of instances in the test set. D = pixels per image
+    :return: matrix of shape (n_instances, M)
+    """
+    n_instances = training.shape[0]
+    batch_size = test.shape[0]
+    distances = np.empty(shape=(n_instances, batch_size))
+    for i in range(n_instances):
+        for j in range(batch_size):
+            dist = gen.euclidean_distance(training[i, :], test[j, :])
+            distances[i][j]
+    return distances
+
+
+def dist_vec(training, test):
+    """
+
+    :param training: matrix of shape (n_instances, D). n_instances = number of instances in the training set.
+    D = pixels per image
+    :param test: matrix of shape (batch_size, D). batch_size = number of instances in the test set. D = pixels per image
+    :return: matrix of shape (n_instances, M)
+    """
+    n_instances = training.shape[0]
+    batch_size = test.shape[0]
+    distances = np.empty(shape=(n_instances, batch_size))
+    for i in range(n_instances):
+        dist = np.apply_along_axis(gen.euclidean_distance, axis=0, args=(training[i, :], test))
+
 
 def main():
     digits = load_digits()
@@ -40,6 +75,10 @@ def main():
                                                                         digits.target,
                                                                         test_size=0.4,
                                                                         random_state=0)
+
+    distance_loop = dist_loop(X_train, X_test)
+    distance_vec = dist_vec(X_train, X_test)
+    # assert distance_loop == distance_vec
 
 
 if __name__ == '__main__':

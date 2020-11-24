@@ -25,6 +25,7 @@
     <list default="true" id="eea9658e-a092-48be-a0f3-fd5a550aa78a" name="Default Changelist" comment="">
       <change afterPath="$PROJECT_DIR$/../Worksheet02/.idea/other.xml" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/../Worksheet02/general.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/general.py" beforeDir="false" afterPath="$PROJECT_DIR$/general.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../Worksheet02/.idea/Worksheet02.iml" beforeDir="false" afterPath="$PROJECT_DIR$/../Worksheet02/.idea/Worksheet02.iml" afterDir="false" />
@@ -131,6 +132,7 @@
       <workItem from="1606221552054" duration="5999000" />
       <workItem from="1606232224575" duration="59000" />
       <workItem from="1606238070254" duration="59000" />
+      <workItem from="1606238158216" duration="62000" />
     </task>
     <task id="LOCAL-00001" summary="Begin of task 2: calculate_ose method created">
       <created>1606180092576</created>
@@ -181,7 +183,14 @@
       <option name="project" value="LOCAL" />
       <updated>1606232272674</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="np.empty instead of np.zeros">
+      <created>1606238217133</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1606238217133</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -207,17 +216,18 @@
     <MESSAGE value="Task 3 done" />
     <MESSAGE value="Worksheet 01 done" />
     <MESSAGE value="Distances in general.py were eliminated" />
-    <option name="LAST_COMMIT_MESSAGE" value="Distances in general.py were eliminated" />
+    <MESSAGE value="np.empty instead of np.zeros" />
+    <option name="LAST_COMMIT_MESSAGE" value="np.empty instead of np.zeros" />
   </component>
   <component name="WindowStateProjectService">
     <state x="184" y="109" width="1071" height="706" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1606178458754">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
     <state x="184" y="109" width="1071" height="706" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1440.900@0.0.1440.900" timestamp="1606178458754" />
-    <state x="126" y="24" key="CommitChangelistDialog2" timestamp="1606232272601">
+    <state x="126" y="24" key="CommitChangelistDialog2" timestamp="1606238217045">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
-    <state x="126" y="24" key="CommitChangelistDialog2/0.0.1440.900/1440.-180.1920.1080@0.0.1440.900" timestamp="1606232272601" />
+    <state x="126" y="24" key="CommitChangelistDialog2/0.0.1440.900/1440.-180.1920.1080@0.0.1440.900" timestamp="1606238217045" />
     <state x="126" y="24" key="CommitChangelistDialog2/0.0.1440.900@0.0.1440.900" timestamp="1606180122428" />
     <state width="1398" height="279" key="GridCell.Tab.0.bottom" timestamp="1606230729900">
       <screen x="0" y="0" width="1440" height="900" />
@@ -272,10 +282,10 @@
     </state>
     <state x="229" y="86" key="SettingsEditor/0.0.1440.900/1440.-180.1920.1080@0.0.1440.900" timestamp="1606211765145" />
     <state x="229" y="86" key="SettingsEditor/0.0.1440.900@0.0.1440.900" timestamp="1606178256967" />
-    <state x="320" y="187" key="Vcs.Push.Dialog.v2" timestamp="1606232281610">
+    <state x="320" y="187" key="Vcs.Push.Dialog.v2" timestamp="1606238218645">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
-    <state x="320" y="187" key="Vcs.Push.Dialog.v2/0.0.1440.900/1440.-180.1920.1080@0.0.1440.900" timestamp="1606232281610" />
+    <state x="320" y="187" key="Vcs.Push.Dialog.v2/0.0.1440.900/1440.-180.1920.1080@0.0.1440.900" timestamp="1606238218645" />
     <state x="320" y="187" key="Vcs.Push.Dialog.v2/0.0.1440.900@0.0.1440.900" timestamp="1606180125962" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
