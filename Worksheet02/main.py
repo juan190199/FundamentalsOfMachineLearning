@@ -6,6 +6,7 @@ import numpy.testing as nt
 import pandas as pd
 
 import general as gen
+import kFoldCV as kfcv
 
 
 def dist_loop(training, test):
@@ -107,7 +108,18 @@ def calculate_error_knn_classifier(X_train, Y_train, X_test, Y_test, batch_size,
     return oses, errors
 
 
+def split_folds(data, target, k):
+    """
+
+    :param data:
+    :param target:
+    :param k: Number of folds
+    :return:
+    """
+
+
 def main():
+    # Task 1
     digits = load_digits()
 
     print(digits.keys())
@@ -148,12 +160,14 @@ def main():
         random_state=0
     )
 
+    # Task 2 & 3
     # distance_loop = dist_loop(X_train, X_test)
     distance_vec_one_loop = dist_vec_one_loop(X_train, X_test)
     distance_vec = dist_vec(X_train, X_test)
     # nt.assert_array_equal(distance_loop, distance_vec)
     nt.assert_array_equal(distance_vec_one_loop, distance_vec)
 
+    # Task 4
     predictions = knn_classifier(7, X_train, Y_train, X_test)
 
     # Filter data
@@ -198,6 +212,16 @@ def main():
     df = pd.DataFrame(errors)
     df = df.groupby(["k"]).first()
     print(df)
+
+    # Task 5
+    X = np.vstack((filt_X_train, filt_X_test))
+    Y = np.hstack((filt_Y_train, filt_Y_test))
+    kf = kfcv.kFoldCV(n_folds=2, shuffle=True, seed=4321)
+    for train_index, test_index in kf.split(dataset=X):
+        X_train, X_test = X[train_index], X[test_index]
+        Y_train, Y_test = Y[train_index], Y[test_index]
+        predictions = knn_classifier(7, X_train, Y_train, X_test)
+
 
 
 if __name__ == '__main__':
