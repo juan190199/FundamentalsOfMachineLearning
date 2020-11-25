@@ -9,6 +9,6 @@
   - Baseline classifiers
   - Nearest Neighbor Classifier
   - k-Nearest Neighbor Classifier
-  - Cross Validation
+  - k-Folds Cross Validation
   
   
