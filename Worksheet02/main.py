@@ -3,7 +3,7 @@ from sklearn import model_selection
 import numpy as np
 import matplotlib.pyplot as plt
 import numpy.testing as nt
-import timeit
+import pandas as pd
 
 import general as gen
 
@@ -54,57 +54,57 @@ def dist_vec(training, test):
     return distances
 
 
-def compare_dist_functions():
-    setup_code1 = """
-from __main__ import dist_loop
-from __main__ import X_train
-from __main__ import X_test
-from general import euclidean_distance
-        """
-    setup_code2 = """
-from __main__ import dist_vec_one_loop
-from __main__ import X_train
-from __main__ import X_test
-from general import euclidean_distance
-        """
-    setup_code3 = """
-from __main__ import dist_vec
-from __main__ import X_train
-from __main__ import X_test
-from general import euclidean_distance
-        """
+def get_knn(k, training, test):
+    """
+    Get k nearest neighbors of each point in the test set
+    :param k: number of neighbors to include in the majority vote
+    :param training: matrix of shape (n_instances, D). n_instances = number of instances in the training set.
+    D = pixels per image
+    :param test: matrix of shape (batch_size, D). batch_size = number of instances in the test set. D = pixels per image
+    :return: ndarray of dimenstion (k, batch_size) containing in each column the idx of knns' in training set.
+    """
+    dist = dist_vec(training, test)
+    # ndarray of dimenstion (k, batch_size) containing in each column the idx of knns' in training set.
+    idx = np.argsort(dist, axis=0)[:k, :]
+    return idx
 
-    stmt_code1 = """
-training = X_train
-test = X_test
-dist_loop(training, test)
-    """
-    stmt_code2 = """
-training = X_train
-test = X_test
-dist_vec_one_loop(training, test)
-    """
-    stmt_code3 = """
-training = X_train
-test = X_test
-dist_vec(training, test)
+
+def knn_classifier(k, training, labels, test, C=10):
     """
 
-    # timeit.repeat statement
-    times1 = timeit.repeat(setup=setup_code1,
-                           stmt=stmt_code1,
-                           repeat=5)
-    print('dist_vec time: {}'.format(min(times1)))
+    :param C: Number of classes
+    :param labels: labels of training data
+    :param k: number of neighbors to include in the majority vote
+    :param training: matrix of shape (n_instances, D). n_instances = number of instances in the training set.
+    D = pixels per image
+    :param test: matrix of shape (batch_size, D). batch_size = number of instances in the test set. D = pixels per image
+    :return: ndarray of shape (batch_size, ) containing label prediction for each test point
+    """
+    idx = get_knn(k, training, test)
+    # ndarray of dimension (k, batch_size) containing per column labels of the knn of the training set
+    count = np.take(labels, idx)
+    # ndarray of dimension (C, batch_size) containing votes for each class per test point
+    election = np.apply_along_axis(lambda x: np.bincount(x, minlength=C), axis=0, arr=count)
+    # ndarray of shape (batch_size, ) containing label prediction for each test point
+    prediction = np.argmax(election, axis=0)
+    return prediction
 
-    times2 = timeit.repeat(setup=setup_code2,
-                           stmt=stmt_code2,
-                           repeat=5)
-    print('dist_vec time: {}'.format(min(times2)))
 
-    times3 = timeit.repeat(setup=setup_code3,
-                           stmt=stmt_code3,
-                           repeat=5)
-    print('dist_vec time: {}'.format(min(times3)))
+def calculate_error_knn_classifier(X_train, Y_train, X_test, Y_test, batch_size, K):
+    oses = np.empty(len(K))
+    i = 0
+    errors = []
+    for k in K:
+        predictions = knn_classifier(k, X_train, Y_train, X_test)
+        n_errors = np.count_nonzero(Y_test != predictions)
+        ose = n_errors / batch_size
+        oses[i] = ose
+        errors.append({
+            "k": k,
+            "ose": ose
+        })
+        i += 1
+    return oses, errors
 
 
 def main():
@@ -118,8 +118,9 @@ def main():
     target_names = digits['target_names']
 
     # print(digits['DESCR'])
-    print(data.dtype)
-    print(data.shape)
+    print("digits['data'].dtype: {}".format(data.dtype))
+    print("digits['data'].shape: {}".format(data.shape))
+    print("digits['images'].shape: {}".format(images.shape))
     """
     The digits dataset consists of 8x8 pixel images of digits. 
     The ``images`` attribute of the dataset stores 8x8 arrays of grayscale values for each image. 
@@ -140,10 +141,12 @@ def main():
         ax.set_title('Training: %i' % label)
     # plt.show()
 
-    X_train, X_test, Y_train, Y_test = model_selection.train_test_split(digits.data,
-                                                                        digits.target,
-                                                                        test_size=0.4,
-                                                                        random_state=0)
+    X_train, X_test, Y_train, Y_test = model_selection.train_test_split(
+        digits.data,
+        digits.target,
+        test_size=0.4,
+        random_state=0
+    )
 
     # distance_loop = dist_loop(X_train, X_test)
     distance_vec_one_loop = dist_vec_one_loop(X_train, X_test)
@@ -151,7 +154,50 @@ def main():
     # nt.assert_array_equal(distance_loop, distance_vec)
     nt.assert_array_equal(distance_vec_one_loop, distance_vec)
 
-    compare_dist_functions()
+    predictions = knn_classifier(7, X_train, Y_train, X_test)
+
+    # Filter data
+    filt_Y_train_idx = np.argwhere((Y_train == 3) | (Y_train == 9)).flatten()
+    filt_X_train = X_train[filt_Y_train_idx, :]
+    filt_Y_train = Y_train[filt_Y_train_idx]
+
+    filt_Y_test_idx = np.argwhere((Y_test == 3) | (Y_test == 9)).flatten()
+    filt_X_test = X_test[filt_Y_test_idx]
+    filt_Y_test = Y_test[filt_Y_test_idx]
+
+    # Create filtered images
+    img_train = filt_X_train.reshape(len(filt_Y_train_idx), 8, 8)
+    img_test = filt_X_test.reshape(len(filt_Y_test_idx), 8, 8)
+
+    # Plot filtered images
+    _, axes = plt.subplots(2, 5)
+    for ax, image, label in zip(axes[0, :], img_train[:5], filt_Y_train[:5]):
+        ax.set_axis_off()
+        assert 2 == len(image.shape)
+        ax.imshow(image, cmap=plt.cm.gray_r, interpolation='nearest')
+        ax.set_title('Training: %i' % label)
+    for ax, image, label in zip(axes[1, :], img_test[5:], filt_Y_test[5:]):
+        ax.set_axis_off()
+        assert 2 == len(image.shape)
+        ax.imshow(image, cmap=plt.cm.gray_r, interpolation='bicubic')
+        ax.set_title('Training: %i' % label)
+    # plt.show()
+
+    # predictions = knn_classifier(7, filt_X_train, filt_Y_train, filt_X_test)
+    k = [1, 3, 5, 9, 17, 33]
+    batch_size = len(filt_Y_test)
+    _, errors = calculate_error_knn_classifier(
+        X_train=filt_X_train,
+        Y_train=filt_Y_train,
+        X_test=filt_X_test,
+        Y_test=filt_Y_test,
+        batch_size=batch_size,
+        K=k
+    )
+
+    df = pd.DataFrame(errors)
+    df = df.groupby(["k"]).first()
+    print(df)
 
 
 if __name__ == '__main__':

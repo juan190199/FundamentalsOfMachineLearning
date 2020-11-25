@@ -23,12 +23,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="eea9658e-a092-48be-a0f3-fd5a550aa78a" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/../Worksheet02/.idea/other.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../Worksheet02/general.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/general.py" beforeDir="false" afterPath="$PROJECT_DIR$/general.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Worksheet02/.idea/Worksheet02.iml" beforeDir="false" afterPath="$PROJECT_DIR$/../Worksheet02/.idea/Worksheet02.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../Worksheet02/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/../Worksheet02/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -133,6 +128,7 @@
       <workItem from="1606232224575" duration="59000" />
       <workItem from="1606238070254" duration="59000" />
       <workItem from="1606238158216" duration="62000" />
+      <workItem from="1606311792182" duration="736000" />
     </task>
     <task id="LOCAL-00001" summary="Begin of task 2: calculate_ose method created">
       <created>1606180092576</created>
