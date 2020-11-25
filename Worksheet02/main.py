@@ -3,6 +3,7 @@ from sklearn import model_selection
 import numpy as np
 import matplotlib.pyplot as plt
 import numpy.testing as nt
+import timeit
 
 import general as gen
 
@@ -53,6 +54,59 @@ def dist_vec(training, test):
     return distances
 
 
+def compare_dist_functions():
+    setup_code1 = """
+from __main__ import dist_loop
+from __main__ import X_train
+from __main__ import X_test
+from general import euclidean_distance
+        """
+    setup_code2 = """
+from __main__ import dist_vec_one_loop
+from __main__ import X_train
+from __main__ import X_test
+from general import euclidean_distance
+        """
+    setup_code3 = """
+from __main__ import dist_vec
+from __main__ import X_train
+from __main__ import X_test
+from general import euclidean_distance
+        """
+
+    stmt_code1 = """
+training = X_train
+test = X_test
+dist_loop(training, test)
+    """
+    stmt_code2 = """
+training = X_train
+test = X_test
+dist_vec_one_loop(training, test)
+    """
+    stmt_code3 = """
+training = X_train
+test = X_test
+dist_vec(training, test)
+    """
+
+    # timeit.repeat statement
+    times1 = timeit.repeat(setup=setup_code1,
+                           stmt=stmt_code1,
+                           repeat=5)
+    print('dist_vec time: {}'.format(min(times1)))
+
+    times2 = timeit.repeat(setup=setup_code2,
+                           stmt=stmt_code2,
+                           repeat=5)
+    print('dist_vec time: {}'.format(min(times2)))
+
+    times3 = timeit.repeat(setup=setup_code3,
+                           stmt=stmt_code3,
+                           repeat=5)
+    print('dist_vec time: {}'.format(min(times3)))
+
+
 def main():
     digits = load_digits()
 
@@ -63,7 +117,7 @@ def main():
     target = digits['target']
     target_names = digits['target_names']
 
-    print(digits['DESCR'])
+    # print(digits['DESCR'])
     print(data.dtype)
     print(data.shape)
     """
@@ -94,7 +148,10 @@ def main():
     # distance_loop = dist_loop(X_train, X_test)
     distance_vec_one_loop = dist_vec_one_loop(X_train, X_test)
     distance_vec = dist_vec(X_train, X_test)
+    # nt.assert_array_equal(distance_loop, distance_vec)
     nt.assert_array_equal(distance_vec_one_loop, distance_vec)
+
+    compare_dist_functions()
 
 
 if __name__ == '__main__':
