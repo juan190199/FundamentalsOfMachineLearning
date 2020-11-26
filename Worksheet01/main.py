@@ -152,11 +152,11 @@ def task2():
 
     df_A = pd.DataFrame(classifier_A)
     df_A = df_A.groupby(["$x_0$", "Batch size"]).first().unstack()
-    # print(df_A)
+    print(df_A)
 
     df_B = pd.DataFrame(classifier_B)
     df_B = df_B.groupby(["$x_0$", "Batch size"]).first().unstack()
-    # print(df_B)
+    print(df_B)
 
     plot_error_rate([df_A, df_B], thresholds)
 
