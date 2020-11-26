@@ -1,5 +1,7 @@
 from sklearn.datasets import load_digits
 from sklearn import model_selection
+from operator import itemgetter
+from sklearn.neighbors import KNeighborsClassifier
 import numpy as np
 import matplotlib.pyplot as plt
 import numpy.testing as nt
@@ -108,16 +110,6 @@ def calculate_error_knn_classifier(X_train, Y_train, X_test, Y_test, batch_size,
     return oses, errors
 
 
-def split_folds(data, target, k):
-    """
-
-    :param data:
-    :param target:
-    :param k: Number of folds
-    :return:
-    """
-
-
 def main():
     # Task 1
     digits = load_digits()
@@ -198,7 +190,7 @@ def main():
     # plt.show()
 
     # predictions = knn_classifier(7, filt_X_train, filt_Y_train, filt_X_test)
-    k = [1, 3, 5, 9, 17, 33]
+    K = [1, 3, 5, 9, 17, 33]
     batch_size = len(filt_Y_test)
     _, errors = calculate_error_knn_classifier(
         X_train=filt_X_train,
@@ -206,9 +198,10 @@ def main():
         X_test=filt_X_test,
         Y_test=filt_Y_test,
         batch_size=batch_size,
-        K=k
+        K=K
     )
 
+    # ToDo: Remove space between header and table
     df = pd.DataFrame(errors)
     df = df.groupby(["k"]).first()
     print(df)
@@ -216,12 +209,38 @@ def main():
     # Task 5
     X = np.vstack((filt_X_train, filt_X_test))
     Y = np.hstack((filt_Y_train, filt_Y_test))
-    kf = kfcv.kFoldCV(n_folds=2, shuffle=True, seed=4321)
-    for train_index, test_index in kf.split(dataset=X):
-        X_train, X_test = X[train_index], X[test_index]
-        Y_train, Y_test = Y[train_index], Y[test_index]
-        predictions = knn_classifier(7, X_train, Y_train, X_test)
+    arr_n_folds = [2, 5, 10]
+    oses = np.empty(shape=(len(arr_n_folds), len(K)))
+    i = 0
+    for n_folds in arr_n_folds:
+        kf = kfcv.kFoldCV(n_folds=n_folds, shuffle=True, seed=4321)
+        for train_index, test_index in kf.split(dataset=X):
+            # print("TRAIN:", train_index, "TEST:", test_index)
+            X_train, X_test = X[train_index], X[test_index]
+            Y_train, Y_test = Y[train_index], Y[test_index]
+            _, errors = calculate_error_knn_classifier(
+                X_train=X_train,
+                Y_train=Y_train,
+                X_test=X_test,
+                Y_test=Y_test,
+                batch_size=batch_size,
+                K=K
+            )
+            oses[i, :] = list(map(itemgetter('ose'), errors))
+        i += 1
 
+    errors = {
+        "Mean": np.mean(oses, axis=0),
+        "Std": np.std(oses, axis=0),
+        "k": K
+    }
+
+    # ToDo: Remove index column of the dataframe
+    df = pd.DataFrame(errors)
+    df.groupby(["k"]).first()
+    print(df)
+
+    # ToDo: Sklearn k-nn for comparison
 
 
 if __name__ == '__main__':

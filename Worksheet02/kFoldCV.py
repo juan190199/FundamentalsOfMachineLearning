@@ -2,6 +2,7 @@ import numpy.testing as nt
 import numpy as np
 from random import randrange
 
+
 class kFoldCV:
     """
     Provides train/test indices to split data in train/test sets.
