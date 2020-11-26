@@ -13,7 +13,7 @@ import kFoldCV as kfcv
 
 def dist_loop(training, test):
     """
-
+    Calculates distance between vectors in two matrices
     :param training: matrix of shape (n_instances, D). n_instances = number of instances in the training set.
     D = pixels per image
     :param test: matrix of shape (batch_size, D). batch_size = number of instances in the test set. D = pixels per image
@@ -31,7 +31,7 @@ def dist_loop(training, test):
 
 def dist_vec_one_loop(training, test):
     """
-
+    Calculates distance between vectors in two matrices
     :param training: matrix of shape (n_instances, D). n_instances = number of instances in the training set.
     D = pixels per image
     :param test: matrix of shape (batch_size, D). batch_size = number of instances in the test set. D = pixels per image
@@ -47,7 +47,7 @@ def dist_vec_one_loop(training, test):
 
 def dist_vec(training, test):
     """
-
+    Calculates distance between vectors in two matrices
     :param training: matrix of shape (n_instances, D). n_instances = number of instances in the training set.
     D = pixels per image
     :param test: matrix of shape (batch_size, D). batch_size = number of instances in the test set. D = pixels per image
@@ -74,7 +74,7 @@ def get_knn(k, training, test):
 
 def knn_classifier(k, training, labels, test, C=10):
     """
-
+    Predicts class of a given test set
     :param C: Number of classes
     :param labels: labels of training data
     :param k: number of neighbors to include in the majority vote
@@ -94,6 +94,16 @@ def knn_classifier(k, training, labels, test, C=10):
 
 
 def calculate_error_knn_classifier(X_train, Y_train, X_test, Y_test, batch_size, K):
+    """
+    Calculates error by prediction with knn-classifier
+    :param X_train: matrix of shape (n_instances, n_features)
+    :param Y_train: matrix of shape (n_instances, 1)
+    :param X_test: matrix of shape (batch_size, n_features)
+    :param Y_test: matrix of shape (batch_size, 1)
+    :param batch_size: integer - number of instances of test set
+    :param K: array with number of neighbors to include in the majority vote
+    :return: tuple - oses: error rates per k, errors: list(dictionary) - keys: "ose", "k"
+    """
     oses = np.empty(len(K))
     i = 0
     errors = []
@@ -121,7 +131,7 @@ def main():
     target = digits['target']
     target_names = digits['target_names']
 
-    # print(digits['DESCR'])
+    print(digits['DESCR'])
     print("digits['data'].dtype: {}".format(data.dtype))
     print("digits['data'].shape: {}".format(data.shape))
     print("digits['images'].shape: {}".format(images.shape))
@@ -132,6 +142,7 @@ def main():
     each image represents and this is included in the title of the 10 plots below.
     """
 
+    # Plot images form 0 to 9
     _, axes = plt.subplots(2, 5)
     for ax, image, label in zip(axes[0, :], images[:5], target[:5]):
         ax.set_axis_off()
@@ -145,6 +156,7 @@ def main():
         ax.set_title('Training: %i' % label)
     # plt.show()
 
+    # Split of training and test data using sklearn
     X_train, X_test, Y_train, Y_test = model_selection.train_test_split(
         digits.data,
         digits.target,
@@ -153,10 +165,10 @@ def main():
     )
 
     # Task 2 & 3
-    # distance_loop = dist_loop(X_train, X_test)
+    distance_loop = dist_loop(X_train, X_test)
     distance_vec_one_loop = dist_vec_one_loop(X_train, X_test)
     distance_vec = dist_vec(X_train, X_test)
-    # nt.assert_array_equal(distance_loop, distance_vec)
+    nt.assert_array_equal(distance_loop, distance_vec)
     nt.assert_array_equal(distance_vec_one_loop, distance_vec)
 
     # Task 4
@@ -190,6 +202,7 @@ def main():
     # plt.show()
 
     # predictions = knn_classifier(7, filt_X_train, filt_Y_train, filt_X_test)
+    # Prediction and error rates for different number of neighbors to include in the majority vote
     K = [1, 3, 5, 9, 17, 33]
     batch_size = len(filt_Y_test)
     _, errors = calculate_error_knn_classifier(
@@ -202,6 +215,7 @@ def main():
     )
 
     # ToDo: Remove space between header and table
+    # Dataframe reporting error rates per k
     df = pd.DataFrame(errors)
     df = df.groupby(["k"]).first()
     print(df)
@@ -235,7 +249,7 @@ def main():
         "k": K
     }
 
-    # Sklearn
+    # Dataframe reporting error rates per k (k-folds cross validation)
     # ToDo: Remove index column of the dataframe
     df = pd.DataFrame(errors_dict)
     df.groupby(["k"]).first()
@@ -276,7 +290,7 @@ def main():
         "k": K
     }
 
-    # Dataframe sklearn
+    # Dataframe reporting error rates per k (Sklearn, k-folds cross validation)
     # ToDo: Remove index column of the dataframe
     df = pd.DataFrame(errors_dict)
     df.groupby(["k"]).first()

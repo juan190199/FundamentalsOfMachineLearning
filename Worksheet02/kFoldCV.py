@@ -1,6 +1,4 @@
-import numpy.testing as nt
 import numpy as np
-from random import randrange
 
 
 class kFoldCV:
