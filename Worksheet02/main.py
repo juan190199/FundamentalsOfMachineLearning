@@ -229,18 +229,58 @@ def main():
             oses[i, :] = list(map(itemgetter('ose'), errors))
         i += 1
 
-    errors = {
+    errors_dict = {
         "Mean": np.mean(oses, axis=0),
         "Std": np.std(oses, axis=0),
         "k": K
     }
 
+    # Sklearn
     # ToDo: Remove index column of the dataframe
-    df = pd.DataFrame(errors)
+    df = pd.DataFrame(errors_dict)
     df.groupby(["k"]).first()
     print(df)
 
-    # ToDo: Sklearn k-nn for comparison
+    # knn - Sklearn
+    oses = np.empty(shape=(len(arr_n_folds), len(K)))
+    j = 0
+    for n_folds in arr_n_folds:
+        kf = kfcv.kFoldCV(n_folds=n_folds, shuffle=True, seed=4321)
+        for train_index, test_index in kf.split(dataset=X):
+            # print("TRAIN:", train_index, "TEST:", test_index)
+            X_train, X_test = X[train_index], X[test_index]
+            Y_train, Y_test = Y[train_index], Y[test_index]
+
+            oses_k = np.empty(len(K))
+            i = 0
+            errors = []
+            for k in K:
+                model = KNeighborsClassifier(k)
+                model.fit(X=X_train, y=Y_train)
+                prediction = model.predict(X=X_test)
+                n_errors = np.count_nonzero(Y_test != prediction)
+                ose = n_errors / batch_size
+                oses_k[i] = ose
+                errors.append({
+                    "k": k,
+                    "ose": ose
+                })
+                i += 1
+
+            oses[j, :] = list(map(itemgetter('ose'), errors))
+        j += 1
+
+    errors_dict = {
+        "Mean": np.mean(oses, axis=0),
+        "Std": np.std(oses, axis=0),
+        "k": K
+    }
+
+    # Dataframe sklearn
+    # ToDo: Remove index column of the dataframe
+    df = pd.DataFrame(errors_dict)
+    df.groupby(["k"]).first()
+    print(df)
 
 
 if __name__ == '__main__':
