@@ -154,7 +154,7 @@ def main():
         assert 2 == len(image.shape)
         ax.imshow(image, cmap=plt.cm.gray_r, interpolation='bicubic')
         ax.set_title('Training: %i' % label)
-    # plt.show()
+    plt.show()
 
     # Split of training and test data using sklearn
     X_train, X_test, Y_train, Y_test = model_selection.train_test_split(
@@ -165,10 +165,10 @@ def main():
     )
 
     # Task 2 & 3
-    distance_loop = dist_loop(X_train, X_test)
+    # distance_loop = dist_loop(X_train, X_test)
     distance_vec_one_loop = dist_vec_one_loop(X_train, X_test)
     distance_vec = dist_vec(X_train, X_test)
-    nt.assert_array_equal(distance_loop, distance_vec)
+    # nt.assert_array_equal(distance_loop, distance_vec)
     nt.assert_array_equal(distance_vec_one_loop, distance_vec)
 
     # Task 4
@@ -199,7 +199,7 @@ def main():
         assert 2 == len(image.shape)
         ax.imshow(image, cmap=plt.cm.gray_r, interpolation='bicubic')
         ax.set_title('Training: %i' % label)
-    # plt.show()
+    plt.show()
 
     # predictions = knn_classifier(7, filt_X_train, filt_Y_train, filt_X_test)
     # Prediction and error rates for different number of neighbors to include in the majority vote
@@ -214,7 +214,6 @@ def main():
         K=K
     )
 
-    # ToDo: Remove space between header and table
     # Dataframe reporting error rates per k
     df = pd.DataFrame(errors)
     df = df.groupby(["k"]).first()
@@ -244,13 +243,12 @@ def main():
         i += 1
 
     errors_dict = {
+        "k": K,
         "Mean": np.mean(oses, axis=0),
-        "Std": np.std(oses, axis=0),
-        "k": K
+        "Std": np.std(oses, axis=0)
     }
 
     # Dataframe reporting error rates per k (k-folds cross validation)
-    # ToDo: Remove index column of the dataframe
     df = pd.DataFrame(errors_dict)
     df.groupby(["k"]).first()
     print(df)
@@ -285,13 +283,12 @@ def main():
         j += 1
 
     errors_dict = {
+        "k": K,
         "Mean": np.mean(oses, axis=0),
-        "Std": np.std(oses, axis=0),
-        "k": K
+        "Std": np.std(oses, axis=0)
     }
 
     # Dataframe reporting error rates per k (Sklearn, k-folds cross validation)
-    # ToDo: Remove index column of the dataframe
     df = pd.DataFrame(errors_dict)
     df.groupby(["k"]).first()
     print(df)
