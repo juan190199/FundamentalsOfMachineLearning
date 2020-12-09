@@ -1,5 +1,6 @@
 # Data
 from sklearn.datasets import load_digits
+from sklearn import model_selection
 
 # Numbers
 import numpy as np
@@ -14,6 +15,12 @@ import pandas as pd
 # Plots
 import matplotlib.pyplot as plt
 import seaborn as sns
+
+
+def backward_search(data, target, significance_level=0.05):
+    features = data.columns.tolist()
+    while(len(features) > 2):
+        features
 
 
 def main():
@@ -34,10 +41,14 @@ def main():
     filt_target = np.squeeze(target[filt_target_idx])
 
     # Split data (N_train/N_test = 3/2)
-    X_train, X_test = filt_data[:221], filt_data[221:361]
-    Y_train, Y_test = filt_target[:221], filt_target[221:361]
+    X_train, X_test, Y_train, Y_test = model_selection.train_test_split(
+        filt_data,
+        filt_target,
+        test_size=0.35,
+        random_state=0
+    )
 
-    matrix = X_train[0].reshape((8, 8))
+    matrix = X_train[20].reshape((8, 8))
     print(matrix)
     plt.imshow(matrix)
     plt.show()
