@@ -7,8 +7,8 @@ import matplotlib.pyplot as plt
 import numpy.testing as nt
 import pandas as pd
 
-import general as gen
-import kFoldCV as kfcv
+import Worksheet02.general as gen
+import Worksheet02.kFoldCV as kfcv
 
 
 def dist_loop(training, test):
@@ -132,9 +132,15 @@ def main():
     target_names = digits['target_names']
 
     print(digits['DESCR'])
-    print("digits['data'].dtype: {}".format(data.dtype))
-    print("digits['data'].shape: {}".format(data.shape))
-    print("digits['images'].shape: {}".format(images.shape))
+    print(f"data.shape          = {data.shape}")
+    print(f"data.dtype          = {data.dtype}")
+    print(f"images.shape        = {images.shape}")
+    print(f"images.shape        = {images.dtype}")
+    print(f"target.shape        = {target.shape}")
+    print(f"target.shape        = {target.dtype}")
+    print(f"target_names.shape  = {target_names.shape}")
+    print(f"target_names.shape  = {target_names.dtype}")
+    print(f"target[:20]         = {target[:20]}")
     """
     The digits dataset consists of 8x8 pixel images of digits. 
     The ``images`` attribute of the dataset stores 8x8 arrays of grayscale values for each image. 
@@ -142,6 +148,10 @@ def main():
     each image represents and this is included in the title of the 10 plots below.
     """
 
+    """
+    For scientific analysis, it's important that we can see the exact value of each pixel in an image array, 
+    even if interpolation = 'bicubic' often yields visually more pleasing results.
+    """
     # Plot images form 0 to 9
     _, axes = plt.subplots(2, 5)
     for ax, image, label in zip(axes[0, :], images[:5], target[:5]):

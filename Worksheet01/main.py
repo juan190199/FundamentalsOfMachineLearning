@@ -1,4 +1,4 @@
-import general as gen
+import Worksheet01.general as gen
 
 import numpy as np
 import pandas as pd

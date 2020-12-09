@@ -12,5 +12,9 @@ def euclidean_distance(x, y, loop=None):
         nt.assert_array_equal(distance, np.linalg.norm(np.subtract(x, y), axis=1))
         return distance
     else:
-        distance = np.sqrt(np.sum(np.square(np.subtract(x[:, np.newaxis], y)), axis=2))
+        distance = np.sqrt(
+            np.sum(
+                np.square(np.subtract(x[:, np.newaxis], y)), axis=2))
         return distance
+
+
