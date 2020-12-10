@@ -16,6 +16,7 @@
     * Linear Discriminant Analysis
   
 * Model Selection
+  * Manual selection of features
   
   
 **References**
