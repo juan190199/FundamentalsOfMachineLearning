@@ -10,8 +10,8 @@
   * Nearest Neighbor Classifier
   * k-Nearest Neighbor Classifier
   * k-Folds Cross Validation
-  * Nearest Mean Classifier
   * Gaussian Discriminant Analysis
+    * Nearest Mean Classifier
     * Quadratic Discriminant Analysis
     * Linear Discriminant Analysis
   
