@@ -111,7 +111,7 @@ def distance_from_mean(x, mean):
     :param mean:
     :return:
     """
-    return np.sqrt(np.sum((x - mean)**2, axis=-1))
+    return np.sqrt(np.sum((x - mean) ** 2, axis=-1))
 
 
 def nearest_mean(training_features, training_labels, test_features):
@@ -176,7 +176,45 @@ def visualization_NearestMean(xr_train, y_train, xr_test, y_test):
     plt.xlabel("feature 1")
     plt.ylabel("feature 2")
     plt.legend()
-    plt.show()
+    # plt.show()
+
+
+def fit_qda(training_features, training_labels):
+    """
+    Computes for each class: mean, covariance matrix and priors
+    :param training_features: ndarray: (N_training, 2)
+    :param training_labels: ndarray: (N_training, 1)
+    :return: mu: ndarray: (N_labels, 2), cov: ndarray: (N_labels, 2, 2), p: ndarray: (N_labels, 1)
+    """
+    mu, cov, p = [], [], []
+    for label in np.unique(training_labels):
+        # Filtering the correct class
+        data = training_features[training_labels == label]
+
+        # Mean
+        mean = np.mean(data, axis=0)
+        mu.append(mean)
+
+        # Covariance
+        # Computed as in textbook
+        # data_centered = data - mean
+        # cov.append(np.dot(data_centered.T, data_centered)/data.shape[0])
+
+        # As numpy oneliner
+        cov.append(np.cov(data.T))
+
+        # Prior
+        p.append(data.shape[0]/training_features.shape[0])
+
+        return mu, cov, p
+
+
+def log_likelihood(x, mu, cov, p):
+    pass
+
+
+def predict_qda(mu, cov, p, test_features):
+    pass
 
 
 def main():
@@ -209,9 +247,6 @@ def main():
     print("Accuracy Nearest Mean: ", np.mean(predicted_labels == y_test))
 
     visualization_NearestMean(xr_training, y_training, xr_test, y_test)
-
-
-
 
 
 if __name__ == '__main__':
