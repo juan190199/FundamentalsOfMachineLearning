@@ -1,364 +1,61 @@
 # Data
 from sklearn.datasets import load_digits
-from sklearn.model_selection import train_test_split
 
 # Numbers
 import numpy as np
-import numpy.testing as nt
 
-# Stats
-from sklearn.preprocessing import StandardScaler
-
-# Data frame
-import pandas as pd
-
-# Plots
-import matplotlib.pyplot as plt
-import seaborn as sns
-
-plt.rcParams['axes.labelsize'] = 12
-plt.rcParams['axes.labelweight'] = 'bold'
-plt.rcParams['axes.titlesize'] = 16
-plt.rcParams['axes.titleweight'] = 'bold'
-
-
-def data_preparation(digits, test_percentage=0.33, random_seed=0):
-    """
-    Filter the digits (1, 7) from the data set and randomly splits it in train and test set.
-    :param digits:
-    :param test_percentage:
-    :param random_seed:
-    :return:
-    """
-    data = digits['data']
-    target = digits['target']
-
-    # Data filtering
-    num_1, num_2 = 1, 7
-    mask = np.logical_or(target == num_1, target == num_2)
-    data = data[mask] / data.max()
-    target = target[mask]
-
-    # Relabel targets
-    target[target == num_1] = 0
-    target[target == num_2] = 1
-
-    # Random split
-    X_train, X_test, Y_train, Y_test = train_test_split(
-        data,
-        target,
-        test_size=test_percentage,
-        random_state=random_seed
-    )
-
-    return X_train, X_test, Y_train, Y_test
-
-
-def reduce_dim(x):
-    """
-    Perform a user defined dimension reduction
-    :param x: ndarray of size (N, 64)
-    :return: ndarray of size (N, 2)
-    """
-    # mean(Upper part) - mean(Lower part)
-    feature1 = (np.mean(x[:, :x.shape[-1] // 4], axis=-1) - np.mean(x[:, 3 * x.shape[-1] // 4:], axis=-1))
-
-    # mean(Upper part) * mean(Lower part)
-    feature2 = (np.mean(x[:, :x.shape[-1] // 4] * x[:, 3 * x.shape[-1] // 4:], axis=-1))
-
-    return np.array([feature1, feature2]).T
-
-
-def scatter_plot_simple(x, y, title="Training"):
-    """
-    Dataset scatter plot
-    :param x: ndarray: (N, 2)
-    :param y: ndarray: (N, 1)
-    :param title: Plot title
-    :return: None
-    """
-    plt.figure(figsize=(16, 9))
-    plt.title(title + " Scatter plot: 1 vs 7")
-
-    plt.scatter(x[y == 0, 0], x[y == 0, 1], marker="o", s=30, c="b", label="1")
-    plt.scatter(x[y == 1, 0], x[y == 1, 1], marker="x", s=30, c="r", label="7")
-
-    plt.xlabel("feature 1")
-    plt.ylabel("feature 2")
-    plt.legend()
-    # plt.show()
-
-
-def worse_reduce_dim(x):
-    """
-    Perform a user defined dimension reduction
-    :param x: ndarray of size (N, 64)
-    :return: ndarray of size (N, 2)
-    """
-    # mean(Image)
-    feat1 = np.mean(x, axis=-1)
-
-    # var(Image)
-    feat2 = np.var(x, axis=-1)
-
-    return np.array([feat1, feat2]).T
-
-
-def distance_from_mean(x, mean):
-    """
-    Computes L2 distance to the mean
-    :param x:
-    :param mean:
-    :return:
-    """
-    return np.sqrt(np.sum((x - mean) ** 2, axis=-1))
-
-
-def nearest_mean(training_features, training_labels, test_features):
-    """
-    This function returns the nearest mean predictions given input training_features, training_labels, and test_features
-    :param training_features: ndarray: (N_training, 2)
-    :param training_labels: ndarray: (N_training, 1)
-    :param test_features: ndarray: (N_test, 2)
-    :return: test_predictions: ndarray: (N_test, 1)
-    """
-
-    classes_list = np.unique(training_labels)
-    mean_points = []
-    # Find all mean points
-    for label in classes_list:
-        mean_points.append(np.mean(training_features[training_labels == label], axis=0))
-
-    distance2mean = np.zeros((test_features.shape[0],
-                              classes_list.shape[0]))
-    # Compute the distances between test_features and all mean
-    for label in classes_list:
-        distance2mean[:, label] = distance_from_mean(test_features, mean_points[label])
-
-    return np.argmin(distance2mean, axis=-1), mean_points
-
-
-def visualization_NearestMean(xr_train, y_train, xr_test, y_test):
-    """
-    Visualization of decision regions for the Nearest Mean Classifier
-    :param xr_train:
-    :param y_train:
-    :param xr_test:
-    :param y_test:
-    :return:
-    """
-    # Build Grid
-    feat_min, feat_max = np.min(xr_test, axis=0), np.max(xr_test, axis=0)
-    x, y = np.linspace(feat_min[0], feat_max[0], 2000), np.linspace(feat_max[1], feat_min[1], 2000)
-    xx = np.array(np.meshgrid(x, y)).reshape(2, -1).T
-
-    # Predict grid labels
-    predicted_labels, mean_points = nearest_mean(xr_train, y_train, xx)
-
-    # Decison boundary
-    plt.figure(figsize=(16, 9))
-    plt.title("Decision Regions (Blue: 1, Red: 7)")
-    plt.imshow(predicted_labels.reshape(-1, 2000),
-               cmap="prism_r", alpha=0.2, vmin=-5,
-               extent=(feat_min[0], feat_max[0], feat_min[1], feat_max[1]))
-
-    # Scatter data
-    plt.scatter(xr_test[y_test == 0, 0], xr_test[y_test == 0, 1], marker="o", s=30, c="b", label="1")
-    plt.scatter(xr_test[y_test == 1, 0], xr_test[y_test == 1, 1], marker="x", s=30, c="r", label="7")
-
-    # Scatter mean points
-    plt.scatter(mean_points[0][0], mean_points[0][1], marker="o", s=50, c="g", label="Mean")
-    plt.scatter(mean_points[1][0], mean_points[1][1], marker="o", s=50, c="g")
-
-    plt.xlim(feat_min[0], feat_max[0])
-    plt.ylim(feat_min[1], feat_max[1])
-
-    plt.xlabel("feature 1")
-    plt.ylabel("feature 2")
-    plt.legend()
-    # plt.show()
-
-
-def fit_qda(training_features, training_labels):
-    """
-    Computes for each class: mean, covariance matrix and priors
-    :param training_features: ndarray: (N_training, 2)
-    :param training_labels: ndarray: (N_training, 1)
-    :return: mu: ndarray: (N_labels, 2), cov: ndarray: (N_labels, 2, 2), p: ndarray: (N_labels, 1)
-    """
-    mu, cov, p = [], [], []
-    for label in np.unique(training_labels):
-        # filtering the correct class
-        data = training_features[training_labels == label]
-
-        # mean
-        mean = np.mean(data, axis=0)
-        mu.append(mean)
-
-        # Covariance
-        # Computed as in textbook
-        # data_centered = data - mean
-        # cov.append(np.dot(data_centered.T, data_centered)/data.shape[0])
-
-        # as numpy oneliner
-        cov.append(np.cov(data.T))
-
-        # Prior
-        p.append(data.shape[0] / training_features.shape[0])
-
-    return mu, cov, p
-
-
-def log_likelihood(x, mu, cov, p):
-    """
-    Computes log-likelihood for each data point x
-    :param x: ndarray: (N, 2)
-    :param mu: ndarray: (2,)
-    :param cov: ndarray: (2, 2)
-    :param p: float
-    :return: logl: ndarray: (N, 2)
-    """
-    alpha = - 0.5 * np.log(2 * np.pi * np.linalg.det(cov)) + np.log(p)
-    x = x - mu
-    logl = -0.5 * (np.sum(x.T * np.dot(np.linalg.inv(cov), x.T), axis=0)) + alpha
-    return logl
-
-
-def predict_qda(mu, cov, p, test_features):
-    """
-    Computes QDA prediction given test_features
-    :param mu: ndarray: (2,)
-    :param cov: ndarray: (2, 2)
-    :param p: float
-    :param test_features: ndarray: (N_test, 2)
-    :return: test_predictions: ndarray(N_test, )
-    """
-    loglikelihood = np.zeros((test_features.shape[0], len(mu)))
-
-    # Find the loglikelihood for each test point
-    for label in range(len(mu)):
-        loglikelihood[:, label] = log_likelihood(test_features,
-                                                 mu[label],
-                                                 cov[label],
-                                                 p[label])
-    return np.argmax(loglikelihood, axis=-1)
-
-
-def plot_ellipse_axis(mu, cov, color="blue"):
-    """
-    Plots main axis of the distribution given mean and covariance matrix
-    :param mu:
-    :param cov:
-    :param color:
-    :return:
-    """
-    # Eigenvalues/Eigenvector decomposition
-    [lamb1, lamb2], [vec_1, vec_2] = np.linalg.eig(cov)
-    lamb1, lamb2 = np.sqrt(lamb1), np.sqrt(lamb2)
-
-    # Plot axis 1
-    x1, y1 = ([mu[0] - lamb1 * vec_1[0], mu[0] + lamb1 * vec_1[0]],
-              [mu[1] - lamb1 * vec_2[0], mu[1] + lamb1 * vec_2[0]])
-    plt.plot(x1, y1, color)
-
-    # Plot axis 2
-    x2, y2 = ([mu[0] - lamb2 * vec_1[1], mu[0] + lamb2 * vec_1[1]],
-              [mu[1] - lamb2 * vec_2[1], mu[1] + lamb2 * vec_2[1]])
-    plt.plot(x2, y2, color)
-
-
-def visualization_QDA(xr_train, y_train, xr_test, y_test, mu, cov, p, mean_points, simple=True):
-    """
-    This Function visualizes the decision regions for the QDA Classifier
-    """
-    # Build Grid
-    feat_min, feat_max = np.min(xr_test, axis=0), np.max(xr_test, axis=0)
-
-    x, y = np.linspace(feat_min[0], feat_max[0], 200), np.linspace(feat_max[1], feat_min[1], 200)
-    xx = np.array(np.meshgrid(x, y)).reshape(2, -1).T
-
-    # Predict grid labels
-    predicted_labels = predict_qda(mu, cov, p, xx)
-
-    # Decison boundary
-    plt.figure(figsize=(16, 9))
-    plt.title("Decision Regions (Blu: 1, Red: 7)")
-    plt.imshow(predicted_labels.reshape(-1, 200),
-               cmap="prism_r",
-               alpha=0.2, vmin=-5,
-               extent=(feat_min[0], feat_max[0], feat_min[1], feat_max[1]))
-
-    # Scatter data
-    plt.scatter(xr_test[y_test == 0, 0], xr_test[y_test == 0, 1], marker="o", s=30, c="b", label="1")
-    plt.scatter(xr_test[y_test == 1, 0], xr_test[y_test == 1, 1], marker="x", s=30, c="r", label="7")
-
-    # Scatter mean points
-    plt.scatter(mean_points[0][0], mean_points[0][1], marker="o", s=50, c="g", label="Mean")
-    plt.scatter(mean_points[1][0], mean_points[1][1], marker="o", s=50, c="g")
-
-    # if simple == False add isocontours and clusters axiss
-    if not simple:
-        zz = np.exp(log_likelihood(xx, mu[0], cov[0], p[0]))
-        plt.contour(x, y, zz.reshape(-1, 200), 3, colors='blue')
-
-        zz = np.exp(log_likelihood(xx, mu[1], cov[1], p[1]))
-        plt.contour(x, y, zz.reshape(-1, 200), 3, colors='red')
-
-        plot_ellipse_axis(mu[0], cov[0], color="green")
-        plot_ellipse_axis(mu[1], cov[1], color="green")
-
-    plt.xlim(feat_min[0], feat_max[0])
-    plt.ylim(feat_min[1], feat_max[1])
-
-    plt.xlabel("feature 1")
-    plt.ylabel("feature 2")
-    plt.legend()
-    plt.show()
-
-
-def cross_validation_qda(digits, num_sample=10):
-    """
-    Measure the correct accuracy with cross validation
-    """
-    mean_rate = np.zeros(num_sample)
-    for i in range(num_sample):
-        x_train, x_test, y_train, y_test = data_preparation(digits, test_percentage=0.33, random_seed=None)
-
-        xr_train, xr_test = reduce_dim(x_train), reduce_dim(x_test)
-        mu, cov, p = fit_qda(xr_train, y_train)
-        predicted_labels = predict_qda(mu, cov, p, xr_test)
-        mean_rate[i] = np.mean(predicted_labels == y_test)
-
-    print("Mean Accuracy Cross Validation: %f +/- %f" % (np.mean(mean_rate), np.std(mean_rate)))
+import general as gen
+import NearestMeanClassifier as NMC
+import QDA
+import LDA
 
 
 def task3(xr_training, y_training, xr_test, y_test):
     # Find nearest mean predictions
-    predicted_labels, mean_points = nearest_mean(xr_training, y_training, xr_test)
+    predicted_labels, mean_points = NMC.nearest_mean(xr_training, y_training, xr_test)
 
     # Print accuracy
     print("Accuracy Nearest Mean: ", np.mean(predicted_labels == y_test))
 
-    visualization_NearestMean(xr_training, y_training, xr_test, y_test)
+    NMC.visualization_NearestMean(xr_training, y_training, xr_test, y_test)
 
 
 def task4(digits, xr_training, y_training, xr_test, y_test):
     # Fit QDA
-    mu, cov, p = fit_qda(xr_training, y_training)
+    mu, cov, p = QDA.fit_qda(xr_training, y_training)
 
     # QDA predictions
-    predicted_labels = predict_qda(mu, cov, p, xr_test)
+    predicted_labels = QDA.predict_qda(mu, cov, p, xr_test)
 
     # Print accuracy
     print("Accuracy QDA: ", np.mean(predicted_labels == y_test))
 
-    _, mean_points = nearest_mean(xr_training, y_training, xr_test)
+    _, mean_points = NMC.nearest_mean(xr_training, y_training, xr_test)
 
-    visualization_QDA(xr_training, y_training, xr_test, y_test, mu, cov, p, mean_points, simple=True)
-    visualization_QDA(xr_training, y_training, xr_test, y_test, mu, cov, p, mean_points, simple=False)
+    QDA.visualization_QDA(xr_training, y_training, xr_test, y_test, mu, cov, p, mean_points, simple=True)
+    QDA.visualization_QDA(xr_training, y_training, xr_test, y_test, mu, cov, p, mean_points, simple=False)
 
-    # Print Cross validation accuracy
-    cross_validation_qda(digits, 100)
+    # Print accuracy with cross validation
+    QDA.cross_validation_qda(digits, 100)
+
+
+def task5(digits, xr_training, y_training, xr_test, y_test):
+    # Fit LDA
+    mu, cov, p = LDA.fit_lda(xr_training, y_training)
+
+    # Find QDA Predictions
+    predicted_labels = LDA.predict_lda(mu, cov, p, xr_test)
+
+    # Print accuracy
+    print("Accuracy LDA: ", np.mean(predicted_labels == y_test))
+
+    _, mean_points = NMC.nearest_mean(xr_training, y_training, xr_test)
+
+    LDA.visualization_LDA(xr_training, y_training, xr_test, y_test, mu, cov, p, mean_points, simple=True)
+    LDA.visualization_LDA(xr_training, y_training, xr_test, y_test, mu, cov, p, mean_points, simple=False)
+
+    # Print accuracy with cross validation
+    QDA.cross_validation_qda(digits, 100)
 
 
 def main():
@@ -366,27 +63,29 @@ def main():
     digits = load_digits()
 
     # Filtering data
-    x_training, x_test, y_training, y_test = data_preparation(digits, 0.33, 0)
+    x_training, x_test, y_training, y_test = gen.data_preparation(digits, 0.33, 0)
 
     # Dimension reduction
-    xr_training, xr_test = reduce_dim(x_training), reduce_dim(x_test)
+    xr_training, xr_test = gen.reduce_dim(x_training), gen.reduce_dim(x_test)
 
     # Scatter plot
-    scatter_plot_simple(xr_training, y_training, "Training")
-    scatter_plot_simple(xr_test, y_test, "Test")
+    gen.scatter_plot_simple(xr_training, y_training, "Training")
+    gen.scatter_plot_simple(xr_test, y_test, "Test")
 
     # Dimension reduction
-    _xr_training, _xr_test = worse_reduce_dim(x_training), worse_reduce_dim(x_test)
+    _xr_training, _xr_test = gen.worse_reduce_dim(x_training), gen.worse_reduce_dim(x_test)
 
     # Scatter Plot
-    scatter_plot_simple(_xr_training, y_training, "Training - Worse features")
+    gen.scatter_plot_simple(_xr_training, y_training, "Training - Worse features")
 
     # Dimension reduction
-    xr_test = reduce_dim(x_test)
+    xr_test = gen.reduce_dim(x_test)
 
-    # task3(xr_training, y_training, xr_test, y_test)
+    task3(xr_training, y_training, xr_test, y_test)
 
-    # task4(digits, xr_training, y_training, xr_test, y_test)
+    task4(digits, xr_training, y_training, xr_test, y_test)
+
+    task5(digits, xr_training, y_training, xr_test, y_test)
 
 
 if __name__ == '__main__':
