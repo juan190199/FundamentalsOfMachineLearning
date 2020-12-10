@@ -188,10 +188,10 @@ def fit_qda(training_features, training_labels):
     """
     mu, cov, p = [], [], []
     for label in np.unique(training_labels):
-        # Filtering the correct class
+        # filtering the correct class
         data = training_features[training_labels == label]
 
-        # Mean
+        # mean
         mean = np.mean(data, axis=0)
         mu.append(mean)
 
@@ -200,21 +200,69 @@ def fit_qda(training_features, training_labels):
         # data_centered = data - mean
         # cov.append(np.dot(data_centered.T, data_centered)/data.shape[0])
 
-        # As numpy oneliner
+        # as numpy oneliner
         cov.append(np.cov(data.T))
 
         # Prior
-        p.append(data.shape[0]/training_features.shape[0])
+        p.append(data.shape[0] / training_features.shape[0])
 
-        return mu, cov, p
+    return mu, cov, p
 
 
 def log_likelihood(x, mu, cov, p):
-    pass
+    """
+    Computes log-likelihood for each data point x
+    :param x: ndarray: (N, 2)
+    :param mu: ndarray: (2,)
+    :param cov: ndarray: (2, 2)
+    :param p: float
+    :return: logl: ndarray: (N, 2)
+    """
+    alpha = - 0.5 * np.log(2 * np.pi * np.linalg.det(cov)) + np.log(p)
+    x = x - mu
+    logl = -0.5 * (np.sum(x.T * np.dot(np.linalg.inv(cov), x.T), axis=0)) + alpha
+    return logl
 
 
 def predict_qda(mu, cov, p, test_features):
-    pass
+    """
+    Computes QDA prediction given test_features
+    :param mu: ndarray: (2,)
+    :param cov: ndarray: (2, 2)
+    :param p: float
+    :param test_features: ndarray: (N_test, 2)
+    :return: test_predictions: ndarray(N_test, )
+    """
+    loglikelihood = np.zeros((test_features.shape[0], len(mu)))
+
+    # Find the loglikelihood for each test point
+    for label in range(len(mu)):
+        loglikelihood[:, label] = log_likelihood(test_features,
+                                                 mu[label],
+                                                 cov[label],
+                                                 p[label])
+    return np.argmax(loglikelihood, axis=-1)
+
+
+def task3(xr_training, y_training, xr_test, y_test):
+    # Find nearest mean predictions
+    predicted_labels, mean_points = nearest_mean(xr_training, y_training, xr_test)
+
+    # Print accuracy
+    print("Accuracy Nearest Mean: ", np.mean(predicted_labels == y_test))
+
+    visualization_NearestMean(xr_training, y_training, xr_test, y_test)
+
+
+def task4(xr_training, y_training, xr_test, y_test):
+    # Fit QDA
+    mu, cov, p = fit_qda(xr_training, y_training)
+
+    # QDA predictions
+    predicted_labels = predict_qda(mu, cov, p, xr_test)
+
+    # Print accuracy
+    print("Accuracy QDA: ", np.mean(predicted_labels == y_test))
 
 
 def main():
@@ -240,13 +288,9 @@ def main():
     # Dimension reduction
     xr_test = reduce_dim(x_test)
 
-    # Find nearest mean predictions
-    predicted_labels, mean_points = nearest_mean(xr_training, y_training, xr_test)
+    # task3(xr_training, y_training, xr_test, y_test)
 
-    # Print accuracy
-    print("Accuracy Nearest Mean: ", np.mean(predicted_labels == y_test))
-
-    visualization_NearestMean(xr_training, y_training, xr_test, y_test)
+    task4(xr_training, y_training, xr_test, y_test)
 
 
 if __name__ == '__main__':
