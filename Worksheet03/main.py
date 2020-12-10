@@ -244,6 +244,94 @@ def predict_qda(mu, cov, p, test_features):
     return np.argmax(loglikelihood, axis=-1)
 
 
+def plot_ellipse_axis(mu, cov, color="blue"):
+    """
+    Plots main axis of the distribution given mean and covariance matrix
+    :param mu:
+    :param cov:
+    :param color:
+    :return:
+    """
+    # Eigenvalues/Eigenvector decomposition
+    [lamb1, lamb2], [vec_1, vec_2] = np.linalg.eig(cov)
+    lamb1, lamb2 = np.sqrt(lamb1), np.sqrt(lamb2)
+
+    # Plot axis 1
+    x1, y1 = ([mu[0] - lamb1 * vec_1[0], mu[0] + lamb1 * vec_1[0]],
+              [mu[1] - lamb1 * vec_2[0], mu[1] + lamb1 * vec_2[0]])
+    plt.plot(x1, y1, color)
+
+    # Plot axis 2
+    x2, y2 = ([mu[0] - lamb2 * vec_1[1], mu[0] + lamb2 * vec_1[1]],
+              [mu[1] - lamb2 * vec_2[1], mu[1] + lamb2 * vec_2[1]])
+    plt.plot(x2, y2, color)
+
+
+def visualization_QDA(xr_train, y_train, xr_test, y_test, mu, cov, p, mean_points, simple=True):
+    """
+    This Function visualizes the decision regions for the QDA Classifier
+    """
+    # Build Grid
+    feat_min, feat_max = np.min(xr_test, axis=0), np.max(xr_test, axis=0)
+
+    x, y = np.linspace(feat_min[0], feat_max[0], 200), np.linspace(feat_max[1], feat_min[1], 200)
+    xx = np.array(np.meshgrid(x, y)).reshape(2, -1).T
+
+    # Predict grid labels
+    predicted_labels = predict_qda(mu, cov, p, xx)
+
+    # Decison boundary
+    plt.figure(figsize=(16, 9))
+    plt.title("Decision Regions (Blu: 1, Red: 7)")
+    plt.imshow(predicted_labels.reshape(-1, 200),
+               cmap="prism_r",
+               alpha=0.2, vmin=-5,
+               extent=(feat_min[0], feat_max[0], feat_min[1], feat_max[1]))
+
+    # Scatter data
+    plt.scatter(xr_test[y_test == 0, 0], xr_test[y_test == 0, 1], marker="o", s=30, c="b", label="1")
+    plt.scatter(xr_test[y_test == 1, 0], xr_test[y_test == 1, 1], marker="x", s=30, c="r", label="7")
+
+    # Scatter mean points
+    plt.scatter(mean_points[0][0], mean_points[0][1], marker="o", s=50, c="g", label="Mean")
+    plt.scatter(mean_points[1][0], mean_points[1][1], marker="o", s=50, c="g")
+
+    # if simple == False add isocontours and clusters axiss
+    if not simple:
+        zz = np.exp(log_likelihood(xx, mu[0], cov[0], p[0]))
+        plt.contour(x, y, zz.reshape(-1, 200), 3, colors='blue')
+
+        zz = np.exp(log_likelihood(xx, mu[1], cov[1], p[1]))
+        plt.contour(x, y, zz.reshape(-1, 200), 3, colors='red')
+
+        plot_ellipse_axis(mu[0], cov[0], color="green")
+        plot_ellipse_axis(mu[1], cov[1], color="green")
+
+    plt.xlim(feat_min[0], feat_max[0])
+    plt.ylim(feat_min[1], feat_max[1])
+
+    plt.xlabel("feature 1")
+    plt.ylabel("feature 2")
+    plt.legend()
+    plt.show()
+
+
+def cross_validation_qda(digits, num_sample=10):
+    """
+    Measure the correct accuracy with cross validation
+    """
+    mean_rate = np.zeros(num_sample)
+    for i in range(num_sample):
+        x_train, x_test, y_train, y_test = data_preparation(digits, test_percentage=0.33, random_seed=None)
+
+        xr_train, xr_test = reduce_dim(x_train), reduce_dim(x_test)
+        mu, cov, p = fit_qda(xr_train, y_train)
+        predicted_labels = predict_qda(mu, cov, p, xr_test)
+        mean_rate[i] = np.mean(predicted_labels == y_test)
+
+    print("Mean Accuracy Cross Validation: %f +/- %f" % (np.mean(mean_rate), np.std(mean_rate)))
+
+
 def task3(xr_training, y_training, xr_test, y_test):
     # Find nearest mean predictions
     predicted_labels, mean_points = nearest_mean(xr_training, y_training, xr_test)
@@ -254,7 +342,7 @@ def task3(xr_training, y_training, xr_test, y_test):
     visualization_NearestMean(xr_training, y_training, xr_test, y_test)
 
 
-def task4(xr_training, y_training, xr_test, y_test):
+def task4(digits, xr_training, y_training, xr_test, y_test):
     # Fit QDA
     mu, cov, p = fit_qda(xr_training, y_training)
 
@@ -263,6 +351,14 @@ def task4(xr_training, y_training, xr_test, y_test):
 
     # Print accuracy
     print("Accuracy QDA: ", np.mean(predicted_labels == y_test))
+
+    _, mean_points = nearest_mean(xr_training, y_training, xr_test)
+
+    visualization_QDA(xr_training, y_training, xr_test, y_test, mu, cov, p, mean_points, simple=True)
+    visualization_QDA(xr_training, y_training, xr_test, y_test, mu, cov, p, mean_points, simple=False)
+
+    # Print Cross validation accuracy
+    cross_validation_qda(digits, 100)
 
 
 def main():
@@ -290,7 +386,7 @@ def main():
 
     # task3(xr_training, y_training, xr_test, y_test)
 
-    task4(xr_training, y_training, xr_test, y_test)
+    # task4(digits, xr_training, y_training, xr_test, y_test)
 
 
 if __name__ == '__main__':
