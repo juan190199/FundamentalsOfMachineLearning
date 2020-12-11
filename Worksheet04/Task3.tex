@@ -1,0 +1,102 @@
+\documentclass[10pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}[English]
+\usepackage{mathabx}
+\usepackage{bbm}
+\usepackage{amssymb}
+\usepackage{amsmath}
+
+\setlength{\parskip}{1em}
+
+\title{Fundamentals of Machine Learning}
+\author{Juan Da Silva}
+\date{Uni Heidelberg - WS2020-21}
+
+\begin{document}
+
+\maketitle
+
+\noindent\textbf{Task 3: LDA derivation from the Least Squares Error}
+
+\noindent Setting the derivatives of $\sum_{i=1}^n\left(w^Tx_i+b-y_i\right)^2$ wrt. $b, w$ to zero, we obtain
+
+\begin{equation} \label{eq:1}
+    \frac{\partial}{\partial b}\sum_{i=1}^n\left(w^Tx_i+b-y_i\right)^2 = 2\sum_{i=1}^n\left(w^Tx_i+b-y_i\right) \stackrel{!}{=} 0
+\end{equation}
+\begin{equation} \label{eq:2}
+    \frac{\partial}{\partial b}\sum_{i=1}^n\left(w^Tx_i+b-y_i\right)^2 = 2\sum_{i=1}^n\left(w^Tx_i+b-y_i\right)x_i \stackrel{!}{=} 0
+\end{equation}
+
+\noindent Since we shall take the targets for class $k=1$ to be $n/n_1$, where $n_1$ is the number of instances in class $k=1$, and $n$ the total number of instances. For class $k=2$, we shall take the targets to be $-n/n_2$, where where $n_2$ is the number of instances in class $k=2$. From equation \ref{eq:1} we obtain an expression for the bias in the form
+
+\begin{equation}
+    b = -w^T\mu
+\end{equation}
+
+\noindent where we have used
+
+\begin{equation}
+    \sum_{i=1}^ny_i = n_1 \frac{n}{n_1}-n_2 \frac{n}{n_2}=0
+\end{equation}
+
+\noindent and where $\mu$ is the mean of the total data set and is given by
+
+\begin{equation}
+    \mu = \frac{1}{n}\sum_{i=1}^n x_i = \frac{1}{n}\left(n_1\mu_1 + n_2\mu_2  \right)
+\end{equation}
+
+\noindent By expanding equation \ref{eq:2}
+
+\begin{equation}
+    \begin{aligned}
+        &\sum_{i=1}^n w^Tx_ix_i + b \sum_{i=1}^nx_i - \sum_{i=1}^n y_ix_i \\
+        &= \sum_{i=1}^n x_ix_i^Tw - w^T\mu \sum_{i=1}^nx_i - \left(\sum_{i \in k=1} y_ix_i +  \sum_{i \in k=2} y_ix_i \right) \\
+        &= \sum_{i=1}^n x_ix_i^Tw - w^T\mu \left(n\mu\right) - \left(\sum_{i \in k=1} \frac{n}{n_1}x_i -  \sum_{i \in k=2} \frac{-n}{n_2}x_i \right) \\
+        &= \sum_{i=1}^n x_ix_i^Tw - nw^T\mu\mu - n\left(\sum_{i \in k=1} \frac{1}{n_1}x_i -  \sum_{i \in k=2} \frac{-1}{n_2}x_i \right) \\
+        &= \sum_{i=1}^n x_ix_i^Tw - nw^T\mu\mu - n\left(\mu_1 - \mu_2\right) \\
+        &= \left[\sum_{i=1}^n \left(x_ix_i^T\right)-n\mu\mu^T\right]w - n\left(\mu_1 - \mu_2\right) \\
+    \end{aligned}
+\end{equation}
+
+\noindent If we let the derivative equal to zero, we will see that:
+
+\begin{equation}
+    \left[\sum_{i=1}^n \left(x_ix_i^T\right)-n\mu\mu^T\right]w = n\left(\mu_1 - \mu_2\right)
+\end{equation}
+
+\noindent Therefore, now we need to prove:
+\begin{equation}
+    \sum_{i=1}^n \left(x_ix_i^T\right)-n\mu\mu^T = S_W + \frac{n_1n_2}{n} S_B
+\end{equation}
+
+\noindent Let's expand the left side of the equation above:
+
+\begin{equation}
+    \begin{aligned}
+        &\sum_{i=1}^n x_ix_i^T - n\left(\frac{n_1}{n}\mu_1+\frac{n_2}{n}\mu_2\right)^2 \\
+        &= \sum_{i=1}^n x_ix_i^T - n\left(\frac{n_1^2}{n^2}||\mu_1||^2 + \frac{n_2^2}{n^2}||\mu_2||^2 + 2 \frac{n_1n_2}{n^2}\mu_1\mu_2^T\right) \\
+        &= \sum_{i=1}^n x_ix_i^T - \frac{n_1^2}{n}||\mu_1||^2 - \frac{n_2^2}{n}||\mu_2||^2 - 2 \frac{n_1n_2}{n}\mu_1\mu_2^T \\
+        &\begin{aligned}
+            =&\sum_{i=1}^n x_ix_i^T + \left(n_1 + \frac{n_1n_2}{n}-2n_1\right)||\mu_1||^2 \\
+            &+ \left(n_2 + \frac{n_1n_2}{n}-2n_2\right)||\mu_2||^2 - 2\frac{n_1n_2}{n}\mu_1\mu_2^T
+        \end{aligned} \\
+        &= \sum_{i=1}^n x_ix_i^T + \left(n_1 - 2n_1\right)||\mu_1||^2 + \left(n_2 - 2n_2\right)||\mu_2||^2 + \frac{n_1n_2}{n}||\mu_1-\mu_2||^2 \\
+        &= \sum_{i=1}^n x_ix_i^T + n_1 ||\mu_1||^2 - 2\mu_1\left(n_1\mu_1^T\right) + n_2 ||\mu_2||^2 - 2\mu_2\left(n_2\mu_2^T\right) + \frac{n_1n_2}{n}S_B \\
+        &= \sum_{i=1}^n x_ix_i^T + n_1 ||\mu_1||^2 - 2\mu_1\sum_{i \in k=1}x_i^T + n_2 ||\mu_2||^2 - 2\mu_2\sum_{i \in k=2}x_i^T + \frac{n_1n_2}{n}S_B \\
+        &\begin{aligned}
+            =&\sum_{i \in k=1} x_ix_i^T + n_1 ||\mu_1||^2 - 2\mu_1\sum_{i \in k=1}x_i^T \\
+            &+ \sum_{i \in k=2} x_ix_i^T + n_2 ||\mu_2||^2 - 2\mu_2\sum_{i \in k=2}x_i^T  + \frac{n_1n_2}{n}S_B
+        \end{aligned} \\
+        &= \sum_{i \in k=1} \left(x_ix_i^T +||\mu_1||^2-2\mu_1x_i^T\right) + \sum_{i \in k=2} \left(x_ix_i^T +||\mu_2||^2-2\mu_2x_i^T\right) + \frac{n_1n_2}{n}S_B \\
+        &= \sum_{i \in k=1} ||x_i - \mu_1||^2 + \sum_{i \in k=2} ||x_i - \mu_2||^2 + \frac{n_1n_2}{n}S_B \\
+        &= S_W + \frac{n_1n_2}{n}S_B
+    \end{aligned}
+\end{equation}
+
+\noindent Using, the definition of $S_B$, we note that $S_Bw$ is always in the direction of $\left(\mu_2-\mu_1\right)$. Thus we can write
+
+\begin{equation}
+    w \ \propto\ S_W^{-1}\left(\mu_2-\mu_1\right)
+\end{equation}
+
+\end{document}
