@@ -22,5 +22,5 @@
   
 **References**
 * https://sebastianraschka.com/blog/2016/model-evaluation-selection-part3.html
-
 * https://ai.stanford.edu/~ang/papers/cv-final.pdf
+* Pattern Recognition and Machine Learning - Christopher M. Bishop
