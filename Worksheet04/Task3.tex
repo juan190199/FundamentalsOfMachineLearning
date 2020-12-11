@@ -24,7 +24,7 @@
     \frac{\partial}{\partial b}\sum_{i=1}^n\left(w^Tx_i+b-y_i\right)^2 = 2\sum_{i=1}^n\left(w^Tx_i+b-y_i\right) \stackrel{!}{=} 0
 \end{equation}
 \begin{equation} \label{eq:2}
-    \frac{\partial}{\partial b}\sum_{i=1}^n\left(w^Tx_i+b-y_i\right)^2 = 2\sum_{i=1}^n\left(w^Tx_i+b-y_i\right)x_i \stackrel{!}{=} 0
+    \frac{\partial}{\partial w}\sum_{i=1}^n\left(w^Tx_i+b-y_i\right)^2 = 2\sum_{i=1}^n\left(w^Tx_i+b-y_i\right)x_i \stackrel{!}{=} 0
 \end{equation}
 
 \noindent Since we shall take the targets for class $k=1$ to be $n/n_1$, where $n_1$ is the number of instances in class $k=1$, and $n$ the total number of instances. For class $k=2$, we shall take the targets to be $-n/n_2$, where where $n_2$ is the number of instances in class $k=2$. From equation \ref{eq:1} we obtain an expression for the bias in the form
