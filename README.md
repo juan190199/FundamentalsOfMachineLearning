@@ -14,6 +14,7 @@
     * Nearest Mean Classifier
     * Quadratic Discriminant Analysis
     * Linear Discriminant Analysis
+    * Relation Least Squares Error and Linear Discriminant Analysis
   
 * Model Selection
   * Manual selection of features
