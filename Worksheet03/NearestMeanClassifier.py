@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-import general as gen
+import Worksheet03.general as gen
 
 
 def nearest_mean(training_features, training_labels, test_features):

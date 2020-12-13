@@ -4,10 +4,10 @@ from sklearn.datasets import load_digits
 # Numbers
 import numpy as np
 
-import general as gen
-import NearestMeanClassifier as NMC
-import QDA
-import LDA
+import Worksheet03.general as gen
+import Worksheet03.NearestMeanClassifier as NMC
+import Worksheet03.QDA as QDA
+import Worksheet03.LDA as LDA
 
 
 def task3(xr_training, y_training, xr_test, y_test):

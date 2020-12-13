@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-import general as gen
+import Worksheet03.general as gen
 
 
 def fit_lda(training_features, training_labels):
