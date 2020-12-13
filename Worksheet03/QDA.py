@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import general as gen
+
+import Worksheet03.general as gen
 
 plt.rcParams['axes.labelsize'] = 12
 plt.rcParams['axes.labelweight'] = 'bold'
@@ -11,9 +12,10 @@ plt.rcParams['axes.titleweight'] = 'bold'
 def fit_qda(training_features, training_labels):
     """
     Computes for each class: mean, covariance matrix and priors
-    :param training_features: ndarray: (N_training, 2)
+    :param training_features: ndarray: (N_training, num_features)
     :param training_labels: ndarray: (N_training, 1)
-    :return: mu: ndarray: (N_labels, 2), cov: ndarray: (N_labels, 2, 2), p: ndarray: (N_labels, 1)
+    :return: mu: ndarray: (N_labels, num_features), cov: ndarray: (N_labels, num_features, num_features),
+    p: ndarray: (N_labels, 1)
     """
     mu, cov, p = [], [], []
     for label in np.unique(training_labels):
