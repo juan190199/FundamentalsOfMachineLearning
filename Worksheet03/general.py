@@ -1,6 +1,12 @@
+# Numbers
 import numpy as np
+
+# Plot
 import matplotlib.pyplot as plt
+
+# Methods
 from sklearn.model_selection import train_test_split
+from sklearn.model_selection import KFold
 
 plt.rcParams['axes.labelsize'] = 12
 plt.rcParams['axes.labelweight'] = 'bold'
@@ -137,3 +143,34 @@ def plot_ellipse_axis(mu, cov, color="blue"):
               [mu[1] - lamb2 * vec_2[1], mu[1] + lamb2 * vec_2[1]])
     plt.plot(x2, y2, color)
 
+
+def cross_validation(digits, fit_func, pred_func, num_sample=10):
+    """
+    Measure the correct accuracy with cross validation
+    """
+    # Get data
+    data = digits["data"]
+    target = digits["target"]
+
+    # Need to prepare data again since 'data_preparation' returns test - train split
+    # Data filering
+    num_1, num_2 = 1, 7
+    mask = np.logical_or(target == num_1, target == num_2)
+    data = data[mask] / data.max()
+    target = target[mask]
+
+    # Relabel targets
+    target[target == num_1] = 0
+    target[target == num_2] = 1
+
+    # Splits
+    k_folds = KFold(n_splits=num_sample)
+
+    mean_rate = np.zeros(num_sample)
+    for i, (train, test) in enumerate(k_folds.split(data)):
+        xr_train, xr_test = reduce_dim(data[train]), reduce_dim(data[test])
+        mu, cov, p = fit_func(xr_train, target[train])
+        predicted_labels = pred_func(mu, cov, p, xr_test)
+        mean_rate[i] = np.mean(predicted_labels == target[test])
+
+    print("Mean Accuracy Cross Validation: %f +/- %f" % (np.mean(mean_rate), np.std(mean_rate)))

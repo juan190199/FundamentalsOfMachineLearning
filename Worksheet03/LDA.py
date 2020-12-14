@@ -97,20 +97,3 @@ def visualization_LDA(xr_train, y_train, xr_test, y_test, mu, cov, p, mean_point
     plt.ylabel("feature 2")
     plt.legend()
     plt.show()
-
-
-def cross_validation_lda(digits, num_sample=10):
-    """
-    Measure the correct accuracy with cross validation
-    """
-    mean_rate = np.zeros(num_sample)
-    for i in range(num_sample):
-        x_train, x_test, y_train, y_test = gen.data_preparation(digits, test_percentage=0.33, random_seed=None)
-
-        xr_train, xr_test = gen.reduce_dim(x_train), gen.reduce_dim(x_test)
-        mu, cov, p = fit_lda(xr_train, y_train)
-        predicted_labels = predict_lda(mu, cov, p, xr_test)
-        mean_rate[i] = np.mean(predicted_labels == y_test)
-
-    print("Mean Accuracy Cross Validation: %f +/- %f" % (np.mean(mean_rate), np.std(mean_rate)))
-

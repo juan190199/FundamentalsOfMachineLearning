@@ -36,7 +36,7 @@ def task4(digits, xr_training, y_training, xr_test, y_test):
     QDA.visualization_QDA(xr_training, y_training, xr_test, y_test, mu, cov, p, mean_points, simple=False)
 
     # Print accuracy with cross validation
-    QDA.cross_validation_qda(digits, 100)
+    gen.cross_validation(digits, QDA.fit_qda, QDA.predict_qda, 100)
 
 
 def task5(digits, xr_training, y_training, xr_test, y_test):
@@ -55,7 +55,7 @@ def task5(digits, xr_training, y_training, xr_test, y_test):
     LDA.visualization_LDA(xr_training, y_training, xr_test, y_test, mu, cov, p, mean_points, simple=False)
 
     # Print accuracy with cross validation
-    QDA.cross_validation_qda(digits, 100)
+    gen.cross_validation(digits, LDA.fit_lda, LDA.predict_lda, 100)
 
 
 def main():
