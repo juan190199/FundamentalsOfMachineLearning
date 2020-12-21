@@ -1,7 +1,8 @@
 import numpy as np
 from sklearn.datasets import load_digits
 
-import BaseClasses
+import Worksheet05.BaseClasses as BaseClasses
+import Worksheet05.general as gen
 
 
 class DensityTree(BaseClasses.Tree):
@@ -48,9 +49,9 @@ class DensityTree(BaseClasses.Tree):
                 # indices from 'valid_features'. This turns 'node' into a split node
                 # and returns the two children, which must be placed on the 'stack'.
                 # your code here
-                n_valid_feat = valid_features.shape[1]
+                n_valid_feat = len(valid_features)
                 rd_indices = np.random.choice(np.arange(0, n_valid_feat), D_try, replace=True)
-                rd_valid_feat = valid_features[rd_indices]
+                rd_valid_feat = data[:, valid_features[rd_indices]]
 
                 left, right = make_density_split_node(node, n, rd_indices)
                 stack.push(left)
@@ -66,7 +67,7 @@ class DensityTree(BaseClasses.Tree):
         # return p(x | y) * p(y) if x is within the tree's bounding box
         # and return 0 otherwise
         if x in leaf:
-            pass
+            return self.prior * ...
         else:
             return 0
 
@@ -96,7 +97,7 @@ def make_density_split_node(node, N, feature_indices):
         # Compute candidate thresholds
         tj = (data_unique[1:] + data_unique[:-1]) / 2
 
-        # Illustration: for loop - hint: vectorized version is possible
+        # ToDo: Illustration: for loop - hint: vectorized version is possible
         for t in tj:
             # Compute the error
             loo_error = ...
@@ -144,9 +145,13 @@ def make_density_leaf_node(node, N):
 
 def test():
     tree = BaseClasses.Tree()
-    dt = DensityTree(tree)
+    dt = DensityTree()
 
-    data = load_digits()
+    digits = load_digits()
+    x_training, x_test, y_training, y_test = gen.data_preparation(digits, 0.33, 0)
+    prior = 1/2
+    dt.train(x_training, prior)
+
 
 if __name__ == '__main__':
     test()
