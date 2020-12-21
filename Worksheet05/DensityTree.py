@@ -87,6 +87,7 @@ def make_density_split_node(node, N, feature_indices):
     # find best feature j (among 'feature_indices') and best threshold t for the split
     e_min = float("inf")
     j_min, t_min = None, None
+    volume_node = np.prod(M - m)  # Used for assert. (vol_left + vol_right = volume_node)
 
     for j in feature_indices:
         # For each feature considered, remove duplicate feature values
@@ -99,14 +100,17 @@ def make_density_split_node(node, N, feature_indices):
 
         # ToDo: Illustration: for loop - hint: vectorized version is possible
         for t in tj:
+            m_left, M_left = np.min(node.data), np.max(np.where(data_unique < t))
+            m_right, M_right = np.min(np.where(data_unique > t)), np.max(node.data)
+            vol_left, vol_right = np.prod()
             # Compute the error
-            loo_error = ...
+            loo_error = n / (N * volume_node) * (n / N - 2 * ((n - 1) / (N - 1)))
 
-            # choose the best threshold that
+            # choose the threshold with minimal error
             if loo_error < e_min:
-                e_min = ...
-                j_min = ...
-                t_min = ...
+                e_min = loo_error
+                j_min = j
+                t_min = t
 
     # create children
     left = BaseClasses.Node()
@@ -149,7 +153,7 @@ def test():
 
     digits = load_digits()
     x_training, x_test, y_training, y_test = gen.data_preparation(digits, 0.33, 0)
-    prior = 1/2
+    prior = 1 / 2
     dt.train(x_training, prior)
 
 
