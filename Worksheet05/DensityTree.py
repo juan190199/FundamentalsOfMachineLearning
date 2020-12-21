@@ -53,7 +53,7 @@ class DensityTree(BaseClasses.Tree):
                 rd_indices = np.random.choice(np.arange(0, n_valid_feat), D_try, replace=True)
                 rd_valid_feat = data[:, valid_features[rd_indices]]
 
-                left, right = make_density_split_node(node, n, rd_indices)
+                left, right = make_density_split_node(node, N, rd_indices)
                 stack.push(left)
                 stack.push(right)
 
@@ -99,14 +99,19 @@ def make_density_split_node(node, N, feature_indices):
         tj = (data_unique[1:] + data_unique[:-1]) / 2
 
         # ToDo: Illustration: for loop - hint: vectorized version is possible
-        for t in tj:
-            m_left, M_left = np.min(node.data), np.max(np.where(data_unique < t))
-            m_right, M_right = np.min(np.where(data_unique > t)), np.max(node.data)
-            vol_left, vol_right = np.prod()
-            # Compute the error
-            loo_error = n / (N * volume_node) * (n / N - 2 * ((n - 1) / (N - 1)))
+        ################################################################################################################
+        # What I have been thinking: To calculate the loo_error,                                                       #
+        # I have to calculate the error for both children (left, right)                                                #
+        # However, I do not understand how is this operation vectorized                                                #
+        # Approach: Calculate m, M in a vectorized way, such that I would get len(tj) m's and M's                      #
+        ################################################################################################################
 
-            # choose the threshold with minimal error
+        for t in tj:
+            max_feat_value, min_feat_value = np.max(np.where(data_unique < t)), np.min(np.where(data_unique > t))
+            # Compute the error
+            loo_error = (n / (N * volume_node)) * (n / N - 2 * ((n - 1) / (N - 1)))
+
+            # choose the best threshold that
             if loo_error < e_min:
                 e_min = loo_error
                 j_min = j
