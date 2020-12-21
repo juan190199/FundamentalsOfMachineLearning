@@ -1,8 +1,8 @@
 import numpy as np
-import BaseClasses
+import Worksheet05.BaseClasses as BaseClasses
 
 
-class DecisionTree(Tree):
+class DecisionTree(BaseClasses.Tree):
     def __init__(self):
         super(DecisionTree, self).__init__()
 
