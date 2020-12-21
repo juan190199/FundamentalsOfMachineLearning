@@ -1,4 +1,6 @@
 import numpy as np
+from sklearn.datasets import load_digits
+
 import BaseClasses
 
 
@@ -7,11 +9,13 @@ class DensityTree(BaseClasses.Tree):
         super(DensityTree, self).__init__()
 
     def train(self, data, prior, n_min=20):
-        '''
-        data: the feature matrix for the digit under consideration
-        prior: the prior probability of this digit
-        n_min: termination criterion (don't split if a node contains fewer instances)
-        '''
+        """
+
+        :param data: the feature matrix for the digit under consideration
+        :param prior: the prior probability of this digit
+        :param n_min: termination criterion (don't split if a node contains fewer instances)
+        :return:
+        """
         self.prior = prior
         N, D = data.shape
         D_try = int(np.sqrt(D))  # number of features to consider for each split decision
@@ -43,25 +47,39 @@ class DensityTree(BaseClasses.Tree):
                 # Call 'make_density_split_node()' with 'D_try' randomly selected
                 # indices from 'valid_features'. This turns 'node' into a split node
                 # and returns the two children, which must be placed on the 'stack'.
-                ...  # your code here
+                # your code here
+                n_valid_feat = valid_features.shape[1]
+                rd_indices = np.random.choice(np.arange(0, n_valid_feat), D_try, replace=True)
+                rd_valid_feat = valid_features[rd_indices]
+
+                left, right = make_density_split_node(node, n, rd_indices)
+                stack.push(left)
+                stack.push(right)
+
             else:
                 # Call 'make_density_leaf_node()' to turn 'node' into a leaf node.
-                ...  # your code here
+                make_density_leaf_node(node, n)
 
     def predict(self, x):
         leaf = self.find_leaf(x)
+        # ToDo: return prior and likelihood
         # return p(x | y) * p(y) if x is within the tree's bounding box
         # and return 0 otherwise
-        return ...  # your code here
+        if x in leaf:
+            pass
+        else:
+            return 0
 
 
 def make_density_split_node(node, N, feature_indices):
-    '''
-    node: the node to be split
-    N:    the total number of training instances for the current class
-    feature_indices: a numpy array of length 'D_try', containing the feature
-                     indices to be considered in the present split
-    '''
+    """
+
+    :param node: the node to be split
+    :param N: the total number of training instances for the current class
+    :param feature_indices: a numpy array of length 'D_try', containing the feature
+    indices to be considered in the present split
+    :return:
+    """
     n, D = node.data.shape
     m, M = node.box
 
@@ -70,11 +88,13 @@ def make_density_split_node(node, N, feature_indices):
     j_min, t_min = None, None
 
     for j in feature_indices:
-        # Hint: For each feature considered, first remove duplicate feature values using
-        # 'np.unique()'. Describe here why this is necessary.
-        data_unique = ...(node.data[:, j])
+        # For each feature considered, remove duplicate feature values
+        # Duplicate feature values have to be removed since there is no possible threshold
+        # in between features with the same values
+        # (The midpoint of two features with the same value would be the same feature value)
+        data_unique = np.unique(node.data[:, j])
         # Compute candidate thresholds
-        tj = ...
+        tj = (data_unique[1:] + data_unique[:-1]) / 2
 
         # Illustration: for loop - hint: vectorized version is possible
         for t in tj:
@@ -110,11 +130,23 @@ def make_density_split_node(node, N, feature_indices):
 
 
 def make_density_leaf_node(node, N):
-    '''
-    node: the node to become a leaf
-    N:    the total number of training instances for the current class
-    '''
+    """
+
+    :param node: the node to become a leaf
+    :param N: the total number of training instances for the current class
+    :return:
+    """
     # compute and store leaf response
     n = node.data.shape[0]
     v = ...
     node.response = ...
+
+
+def test():
+    tree = BaseClasses.Tree()
+    dt = DensityTree(tree)
+
+    data = load_digits()
+
+if __name__ == '__main__':
+    test()
