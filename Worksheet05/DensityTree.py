@@ -44,13 +44,11 @@ class DensityTree(BaseClasses.Tree):
         stack = [self.root]
         while len(stack):
             node = stack.pop()
-            print(node.data.shape[0])
             n = node.data.shape[0]  # number of instances in present node
             if n >= n_min:
                 # Call 'make_density_split_node()' with 'D_try' randomly selected
                 # indices from 'valid_features'. This turns 'node' into a split node
                 # and returns the two children, which must be placed on the 'stack'.
-                # your code here
                 n_valid_feat = len(valid_features)
                 rd_indices = np.random.choice(np.arange(0, n_valid_feat), D_try, replace=True)
                 rd_valid_feat = data[:, valid_features[rd_indices]]
