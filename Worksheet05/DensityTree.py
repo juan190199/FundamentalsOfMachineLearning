@@ -44,6 +44,7 @@ class DensityTree(BaseClasses.Tree):
         stack = [self.root]
         while len(stack):
             node = stack.pop()
+            print(node.data.shape[0])
             n = node.data.shape[0]  # number of instances in present node
             if n >= n_min:
                 # Call 'make_density_split_node()' with 'D_try' randomly selected
@@ -55,8 +56,8 @@ class DensityTree(BaseClasses.Tree):
                 rd_valid_feat = data[:, valid_features[rd_indices]]
 
                 left, right = make_density_split_node(node, N, rd_indices)
-                stack.push(left)
-                stack.push(right)
+                stack.append(left)
+                stack.append(right)
 
             else:
                 # Call 'make_density_leaf_node()' to turn 'node' into a leaf node.
@@ -124,10 +125,14 @@ def make_density_split_node(node, N, feature_indices):
 
             # Look for those instances with value of feature j less than t
             inst_left = np.where(node.data[:, j] < t)
+            n_inst_left = len(inst_left)
+
+            inst_right = np.where(node.data[:, j] > t)
+            n_inst_right = len(inst_right)
 
             # Compute the error
-            loo_error = (n / (N * vol_left)) * (n / N - 2 * ((n - 1) / (N - 1))) + (n / (N * vol_right)) * (
-                        n / N - 2 * ((n - 1) / (N - 1)))
+            loo_error = (n_inst_left / (N * vol_left)) * (n_inst_left / N - 2 * ((n_inst_left - 1) / (N - 1))) + (n_inst_right / (N * vol_right)) * (
+                        n_inst_right / N - 2 * ((n_inst_right - 1) / (N - 1)))
 
             # choose the best threshold that
             if loo_error < e_min:
@@ -141,17 +146,24 @@ def make_density_split_node(node, N, feature_indices):
 
     # initialize 'left' and 'right' with the data subsets and bounding boxes
     # according to the optimal split found above
-    left.data = ...  # store data in left node -- for subsequent splits
-    left.box = ...  # store bounding box in left node
-    right.data = ...
-    right.box = ...
+
+    m_left, M_right = copy.deepcopy(m), copy.deepcopy(M)
+    M_left = copy.deepcopy(M)
+    M_left[j] = t_min
+    m_right = copy.deepcopy(m)
+    m_right[j] = t_min
+
+    left.data = node.data[np.where(node.data[:, j_min] < t_min)[0], :]  # store data in left node -- for subsequent splits
+    left.box = m_left.copy(), M_left.copy()  # store bounding box in left node
+    right.data = node.data[np.where(node.data[:, j_min] > t_min)[0], :]
+    right.box = m_right.copy(), M_right.copy()
 
     # turn the current 'node' into a split node
     # (store children and split condition)
     node.left = left
     node.right = right
-    node.feature = ...
-    node.threshold = ...
+    node.feature = j_min
+    node.threshold = t_min
 
     # return the children (to be placed on the stack)
     return left, right
