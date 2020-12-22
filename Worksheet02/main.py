@@ -25,7 +25,7 @@ def dist_loop(training, test):
     for i in range(n_instances):
         for j in range(batch_size):
             dist = gen.euclidean_distance(training[i, :], test[j, :], loop=2)
-            distances[i][j] = dist
+            distances[i, j] = dist
     return distances
 
 
@@ -45,7 +45,7 @@ def dist_vec_one_loop(training, test):
     return distances
 
 
-def dist_vec(training, test):
+def dist_vec_v1(training, test):
     """
     Calculates distance between vectors in two matrices
     :param training: matrix of shape (n_instances, D). n_instances = number of instances in the training set.
@@ -53,7 +53,24 @@ def dist_vec(training, test):
     :param test: matrix of shape (batch_size, D). batch_size = number of instances in the test set. D = pixels per image
     :return: matrix of shape (n_instances, M)
     """
-    distances = gen.euclidean_distance(training, test)
+    distances = gen.euclidean_distance(training, test, version='v1')
+    return distances
+
+
+def dist_vec_v2(training, test):
+    """
+    Calculates distance between vectors in two matrices
+    :param training: matrix of shape (n_instances, D). n_instances = number of instances in the training set.
+    D = pixels per image
+    :param test: matrix of shape (batch_size, D). batch_size = number of instances in the test set. D = pixels per image
+    :return: matrix of shape (n_instances, M)
+    """
+    distances = gen.euclidean_distance(training, test, version='v2')
+    return distances
+
+
+def dist_vec_original(training, test):
+    distances = gen.euclidean_distance(training, test, version='original')
     return distances
 
 
@@ -66,7 +83,7 @@ def get_knn(k, training, test):
     :param test: matrix of shape (batch_size, D). batch_size = number of instances in the test set. D = pixels per image
     :return: ndarray of dimenstion (k, batch_size) containing in each column the idx of knns' in training set.
     """
-    dist = dist_vec(training, test)
+    dist = dist_vec_v1(training, test)
     # ndarray of dimenstion (k, batch_size) containing in each column the idx of knns' in training set.
     idx = np.argsort(dist, axis=0)[:k, :]
     return idx
@@ -177,9 +194,13 @@ def main():
     # Task 2 & 3
     # distance_loop = dist_loop(X_train, X_test)
     distance_vec_one_loop = dist_vec_one_loop(X_train, X_test)
-    distance_vec = dist_vec(X_train, X_test)
-    # nt.assert_array_equal(distance_loop, distance_vec)
-    nt.assert_array_equal(distance_vec_one_loop, distance_vec)
+    distance_vec_v1 = dist_vec_v1(X_train, X_test)
+    distance_vec_v2 = dist_vec_v2(X_train, X_test)
+    distance_vec_original = dist_vec_original(X_train, X_test)
+    # nt.assert_array_equal(distance_loop, distance_vec_v1)
+    nt.assert_array_equal(distance_vec_one_loop, distance_vec_v1)
+    nt.assert_array_equal(distance_vec_v1, distance_vec_v2)
+    nt.assert_array_equal(distance_vec_v1, distance_vec_original)
 
     # Task 4
     predictions = knn_classifier(7, X_train, Y_train, X_test)
@@ -212,10 +233,10 @@ def main():
     plt.show()
 
     # predictions = knn_classifier(7, filt_X_train, filt_Y_train, filt_X_test)
-    # Prediction and error rates for different number of neighbors to include in the majority vote
+    # Prediction and error rates for different number of neighbors to include in the majority vote for filtered data
     K = [1, 3, 5, 9, 17, 33]
     batch_size = len(filt_Y_test)
-    _, errors = calculate_error_knn_classifier(
+    _, filt_errors = calculate_error_knn_classifier(
         X_train=filt_X_train,
         Y_train=filt_Y_train,
         X_test=filt_X_test,
@@ -225,9 +246,53 @@ def main():
     )
 
     # Dataframe reporting error rates per k
+    print("\n Error rates for class pairs (3, 9)")
+    df = pd.DataFrame(filt_errors)
+    df = df.groupby(["k"]).first()
+    print(df)
+
+    # Convert lis of dictionaries containing errors to one dimensional list of errors
+    list_filt_errors = np.empty(len(K))
+    for i in range(len(filt_errors)):
+        list_filt_errors[i] = filt_errors[i]['ose']
+
+    # Prediction and error rates for different number of neighbors to include in the majority vote for raw data
+    _, errors = calculate_error_knn_classifier(
+        X_train=X_train,
+        Y_train=Y_train,
+        X_test=X_test,
+        Y_test=Y_test,
+        batch_size=batch_size,
+        K=K
+    )
+
+    # Dataframe reporting error rates per k
+    print("\n Error rates for all classes")
     df = pd.DataFrame(errors)
     df = df.groupby(["k"]).first()
     print(df)
+
+    # Convert lis of dictionaries containing errors to one dimensional list of errors
+    list_errors = np.empty(len(K))
+    for i in range(len(filt_errors)):
+        list_errors[i] = errors[i]['ose']
+
+    # Plot average error rate for class pair (3, 9)
+    fig, axes = plt.subplots(1, 2, figsize=(10, 4))
+    axes[0].set_title("Average error rate for class pair (3,9)")
+    axes[0].plot(K, list_filt_errors)
+    axes[0].scatter(K, list_filt_errors, c="Red")
+    axes[0].set_ylabel("average error in %")
+    axes[0].set_xlabel("number of neighbors k")
+
+    axes[1].set_title("Average error rate for all classes")
+    axes[1].plot(K, list_errors)
+    axes[1].scatter(K, list_errors, c="Red")
+    axes[1].set_ylabel("average error in %")
+    axes[1].set_xlabel("number of neighbors k")
+
+    fig.tight_layout()
+    plt.show()
 
     # Task 5
     X = np.vstack((filt_X_train, filt_X_test))
