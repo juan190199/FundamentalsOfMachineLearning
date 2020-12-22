@@ -1,4 +1,5 @@
 import numpy as np
+import copy
 import Worksheet05.BaseClasses as BaseClasses
 
 
@@ -7,11 +8,13 @@ class DecisionTree(BaseClasses.Tree):
         super(DecisionTree, self).__init__()
 
     def train(self, data, labels, n_min=20):
-        '''
-        data: the feature matrix for all digits
-        labels: the corresponding ground-truth responses
-        n_min: termination criterion (don't split if a node contains fewer instances)
-        '''
+        """
+
+        :param data: the feature matrix for all digits
+        :param labels: the corresponding ground-truth responses
+        :param n_min: termination criterion (don't split if a node contains fewer instances)
+        :return:
+        """
         N, D = data.shape
         D_try = int(np.sqrt(D))  # how many features to consider for each split decision
 
@@ -27,10 +30,13 @@ class DecisionTree(BaseClasses.Tree):
                 # Call 'make_decision_split_node()' with 'D_try' randomly selected
                 # feature indices. This turns 'node' into a split node
                 # and returns the two children, which must be placed on the 'stack'.
-                ...  # your code here
+                rd_indices = np.random.choice(np.arange(0, n), D_try, replace=True)
+                left, right = make_decision_split_node(node, N, rd_indices)
+                stack.append(left)
+                stack.append(right)
             else:
                 # Call 'make_decision_leaf_node()' to turn 'node' into a leaf node.
-                ...  # your code here
+                make_decision_leaf_node(node)
 
     def predict(self, x):
         leaf = self.find_leaf(x)
@@ -39,16 +45,30 @@ class DecisionTree(BaseClasses.Tree):
 
 
 def make_decision_split_node(node, feature_indices):
-    '''
-    node: the node to be split
-    feature_indices: a numpy array of length 'D_try', containing the feature
-                     indices to be considered in the present split
-    '''
+    """
+
+    :param node: the node to be split
+    :param feature_indices: a numpy array of length 'D_try', containing the feature
+    indices to be considered in the present split
+    :return:
+    """
     n, D = node.data.shape
 
     # find best feature j (among 'feature_indices') and best threshold t for the split
-    ...  # your code here
+    for j in feature_indices:
+        data_unique = np.uique(node.data[:, j])
+        tj = (data_unique[1:] + data_unique[:-1]) / 2
+        for t in tj:
+            # Calculate volume children nodes
+            m_left, M_right = copy.deepcopy(m), copy.deepcopy(M)
+            M_left = copy.deepcopy(M)
+            M_left[j] = t
+            m_right = copy.deepcopy(m)
+            m_right[j] = t
 
+            # Calculate volume left and right children
+            vol_left = np.prod(M_left - m_left)
+            vol_right = np.prod(M_right - m_right)
     # create children
     left = BaseClasses.Node()
     right = BaseClasses.Node()
