@@ -160,19 +160,6 @@ def make_density_leaf_node(node, N):
     """
     # compute and store leaf response
     n = node.data.shape[0]
-    v = ...
-    node.response = ...
-
-
-def test():
-    tree = BaseClasses.Tree()
-    dt = DensityTree()
-
-    digits = load_digits()
-    x_training, x_test, y_training, y_test = gen.data_preparation(digits, 0.33, 0)
-    prior = 1 / 2
-    dt.train(x_training, prior)
-
-
-if __name__ == '__main__':
-    test()
+    m, M = node.box
+    v = np.prod(M - m)
+    node.response = n / N / v
