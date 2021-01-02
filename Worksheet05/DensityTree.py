@@ -1,9 +1,6 @@
 import numpy as np
-import copy
-from sklearn.datasets import load_digits
 
 import Worksheet05.BaseClasses as BaseClasses
-import Worksheet05.general as gen
 
 
 class DensityTree(BaseClasses.Tree):
@@ -153,7 +150,6 @@ def make_density_split_node(node, N, feature_indices):
 
 def make_density_leaf_node(node, N):
     """
-
     :param node: the node to become a leaf
     :param N: the total number of training instances for the current class
     :return:
