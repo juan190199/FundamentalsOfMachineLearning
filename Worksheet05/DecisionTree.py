@@ -114,6 +114,6 @@ def node_is_pure(node):
     :param node:
     :return: boolean variable
     """
-    return  np.unique(node.labels).shape[0] == 1
+    return np.unique(node.labels).shape[0] == 1
 
 
