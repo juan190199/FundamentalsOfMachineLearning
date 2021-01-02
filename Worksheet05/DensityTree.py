@@ -49,27 +49,22 @@ class DensityTree(BaseClasses.Tree):
                 # Call 'make_density_split_node()' with 'D_try' randomly selected
                 # indices from 'valid_features'. This turns 'node' into a split node
                 # and returns the two children, which must be placed on the 'stack'.
-                n_valid_feat = len(valid_features)
-                rd_indices = np.random.choice(np.arange(0, n_valid_feat), D_try, replace=True)
-                rd_valid_feat = data[:, valid_features[rd_indices]]
-
-                left, right = make_density_split_node(node, N, rd_indices)
+                perm = np.random.permutation(len(valid_features))
+                left, right = make_density_split_node(node, N, valid_features[perm][:D_try])
                 stack.append(left)
                 stack.append(right)
-
             else:
                 # Call 'make_density_leaf_node()' to turn 'node' into a leaf node.
-                make_density_leaf_node(node, n)
+                make_density_leaf_node(node, N)
 
     def predict(self, x):
-        leaf = self.find_leaf(x)
-        # ToDo: return prior and likelihood
         # return p(x | y) * p(y) if x is within the tree's bounding box
         # and return 0 otherwise
-        if x in leaf:
-            return self.prior * ...
+        m, M = self.box
+        if np.any(x < m) or np.any(x > M):
+            return 0.0
         else:
-            return 0
+            return self.prior * self.find_leaf(x).response
 
 
 def make_density_split_node(node, N, feature_indices):
@@ -83,29 +78,28 @@ def make_density_split_node(node, N, feature_indices):
     """
     n, D = node.data.shape
     m, M = node.box
+    v = np.prod(M - m)
+
+    if v <= 0:
+        raise RuntimeError("Zero volume (should not happen)")
 
     # find best feature j (among 'feature_indices') and best threshold t for the split
     e_min = float("inf")
-    j_min, t_min = None, None
-    volume_node = np.prod(M - m)  # Used for assert. (vol_left + vol_right = volume_node)
+    j_min, t_min = 0, 0
 
     for j in feature_indices:
         # For each feature considered, remove duplicate feature values
         # Duplicate feature values have to be removed since there is no possible threshold
         # in between features with the same values
         # (The midpoint of two features with the same value would be the same feature value)
-        data_unique = np.unique(node.data[:, j])
+
+        # Remove duplicate features
+        dj = np.sort(np.unique(node.data[:, j]))
+
         # Compute candidate thresholds
-        tj = (data_unique[1:] + data_unique[:-1]) / 2
+        tj = (dj[1:] + dj[:-1]) / 2
 
-        # ToDo: Illustration: for loop - hint: vectorized version is possible
-        ################################################################################################################
-        # What I have been thinking: To calculate the loo_error,                                                       #
-        # I have to calculate the error for both children (left, right)                                                #
-        # However, I do not understand how is this operation vectorized                                                #
-        # Approach: Calculate m, M in a vectorized way, such that I would get len(tj) m's and M's                      #
-        ################################################################################################################
-
+        # Each candidate threshold we need to compute leave-one-out error (looErr) of the resulting children node
         for t in tj:
             # Calculate max left child and min right child give threshold t
             Mj_left, mj_right = np.max(np.where(data_unique < t)), np.min(np.where(data_unique > t))
@@ -129,8 +123,9 @@ def make_density_split_node(node, N, feature_indices):
             n_inst_right = len(inst_right)
 
             # Compute the error
-            loo_error = (n_inst_left / (N * vol_left)) * (n_inst_left / N - 2 * ((n_inst_left - 1) / (N - 1))) + (n_inst_right / (N * vol_right)) * (
-                        n_inst_right / N - 2 * ((n_inst_right - 1) / (N - 1)))
+            loo_error = (n_inst_left / (N * vol_left)) * (n_inst_left / N - 2 * ((n_inst_left - 1) / (N - 1))) + (
+                        n_inst_right / (N * vol_right)) * (
+                                n_inst_right / N - 2 * ((n_inst_right - 1) / (N - 1)))
 
             # choose the best threshold that
             if loo_error < e_min:
@@ -151,7 +146,8 @@ def make_density_split_node(node, N, feature_indices):
     m_right = copy.deepcopy(m)
     m_right[j] = t_min
 
-    left.data = node.data[np.where(node.data[:, j_min] < t_min)[0], :]  # store data in left node -- for subsequent splits
+    left.data = node.data[np.where(node.data[:, j_min] < t_min)[0],
+                :]  # store data in left node -- for subsequent splits
     left.box = m_left.copy(), M_left.copy()  # store bounding box in left node
     right.data = node.data[np.where(node.data[:, j_min] > t_min)[0], :]
     right.box = m_right.copy(), M_right.copy()
