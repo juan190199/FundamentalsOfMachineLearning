@@ -99,18 +99,21 @@ def make_decision_split_node(node, feature_indices):
 
 
 def make_decision_leaf_node(node):
-    '''
-    node: the node to become a leaf
-    '''
-    # compute and store leaf response
-    node.N = ...
-    node.response = ... # your code here
+    """
+
+    :param node: The node to become a leaf
+    :return:
+    """
+    node.N = node.labels.shape[0]
+    node.response = np.bincount(node.labels, minlength=10) / node.N
 
 
 def node_is_pure(node):
-    '''
-    check if 'node' ontains only instances of the same digit
-    '''
-    return ... # your code here
+    """
+    Check if 'node' ontains only instances of the same digit
+    :param node:
+    :return: boolean variable
+    """
+    return  np.unique(node.labels).shape[0] == 1
 
 
