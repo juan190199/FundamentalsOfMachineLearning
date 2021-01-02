@@ -1,5 +1,5 @@
 import numpy as np
-import copy
+
 import Worksheet05.BaseClasses as BaseClasses
 
 
@@ -9,29 +9,31 @@ class DecisionTree(BaseClasses.Tree):
 
     def train(self, data, labels, n_min=20):
         """
-
         :param data: the feature matrix for all digits
         :param labels: the corresponding ground-truth responses
         :param n_min: termination criterion (don't split if a node contains fewer instances)
         :return:
         """
         N, D = data.shape
-        D_try = int(np.sqrt(D))  # how many features to consider for each split decision
+        D_try = int(np.sqrt(D))  # How many features to consider for each split decision
 
-        # initialize the root node
+        # Initialize the root node
         self.root.data = data
         self.root.labels = labels
 
+        # Put root in stack
         stack = [self.root]
         while len(stack):
             node = stack.pop()
-            n = node.data.shape[0]  # number of instances in present node
+            n = node.data.shape[0]  # Number of instances in present node
             if n >= n_min and not node_is_pure(node):
                 # Call 'make_decision_split_node()' with 'D_try' randomly selected
                 # feature indices. This turns 'node' into a split node
                 # and returns the two children, which must be placed on the 'stack'.
-                rd_indices = np.random.choice(np.arange(0, n), D_try, replace=True)
-                left, right = make_decision_split_node(node, N, rd_indices)
+                perm = np.random.permutation(D)  # Permutate D indices
+                # Select :D_try of permuted indices for 'make_decision_split_node()'
+                left, right = make_decision_split_node(node, perm[:D_try])
+                # Put children in stack
                 stack.append(left)
                 stack.append(right)
             else:
@@ -41,7 +43,7 @@ class DecisionTree(BaseClasses.Tree):
     def predict(self, x):
         leaf = self.find_leaf(x)
         # compute p(y | x)
-        return ...  # your code here
+        return leaf.response
 
 
 def make_decision_split_node(node, feature_indices):
