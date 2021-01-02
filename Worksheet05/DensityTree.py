@@ -58,8 +58,7 @@ class DensityTree(BaseClasses.Tree):
                 make_density_leaf_node(node, N)
 
     def predict(self, x):
-        # return p(x | y) * p(y) if x is within the tree's bounding box
-        # and return 0 otherwise
+        # return p(x | y) * p(y) if x is within the tree's bounding box and return 0 otherwise
         m, M = self.box
         if np.any(x < m) or np.any(x > M):
             return 0.0
