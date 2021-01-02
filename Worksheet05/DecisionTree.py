@@ -48,7 +48,6 @@ class DecisionTree(BaseClasses.Tree):
 
 def make_decision_split_node(node, feature_indices):
     """
-
     :param node: the node to be split
     :param feature_indices: a numpy array of length 'D_try', containing the feature
     indices to be considered in the present split
@@ -56,40 +55,46 @@ def make_decision_split_node(node, feature_indices):
     """
     n, D = node.data.shape
 
-    # find best feature j (among 'feature_indices') and best threshold t for the split
+    # Find best feature j (among 'feature_indices') and best threshold t for the split
+    e_min = 1e100
+    j_min, t_min = 0, 0
     for j in feature_indices:
-        data_unique = np.uique(node.data[:, j])
-        tj = (data_unique[1:] + data_unique[:-1]) / 2
+        # Remove duplicate features
+        dj = np.sort(np.unique(node.data[:, j]))
+        # Compute candidate thresholds in the middle between consecutive feature values
+        tj = (dj[1:] + dj[:-1]) / 2
+        # Gini impurities of the resulting children node have to be computed for each candidate threshold
         for t in tj:
-            # Calculate volume children nodes
-            m_left, M_right = copy.deepcopy(m), copy.deepcopy(M)
-            M_left = copy.deepcopy(M)
-            M_left[j] = t
-            m_right = copy.deepcopy(m)
-            m_right[j] = t
+            left_indices = node.data[:, j] <= t
+            nl = np.sum(left_indices)
+            ll = node.labels[left_indices]
+            el = nl * (1 - np.sum(np.square(np.bincount(ll) / nl)))
+            nr = n - nl
+            lr = node.labels[node.data[:, j] > t]
+            er = nr * (1 - np.sum(np.square(np.bincount(lr) / nr)))
 
-            # Calculate volume left and right children
-            vol_left = np.prod(M_left - m_left)
-            vol_right = np.prod(M_right - m_right)
-    # create children
+            # Choose the the best threshold that minimizes sum of Gini impurities
+            if el + er < e_min:
+                e_min = el + er
+                j_min = j
+                t_min = t
+
+    # Create children
     left = BaseClasses.Node()
     right = BaseClasses.Node()
 
-    # initialize 'left' and 'right' with the data subsets and labels
-    # according to the optimal split found above
-    left.data = ...  # data in left node
-    left.labels = ...  # corresponding labels
-    right.data = ...
-    right.labels = ...
+    # Initialize 'left' and 'right' with the data subsets and labels according to the optimal split found above
+    left.data = node.data[node.data[:, j_min] <= t_min, :]
+    left.labels = node.labels[node.data[:, j_min] <= t_min]
+    right.data = node.data[node.data[:, j_min] > t_min, :]
+    right.labels = node.labels[node.data[:, j_min] > t_min]
 
-    # turn the current 'node' into a split node
-    # (store children and split condition)
+    # Turn the current 'node' into a split node (store children and split condition)
     node.left = left
     node.right = right
-    node.feature = ...
-    node.threshold = ...
+    node.feature = j_min
+    node.threshold = t_min
 
-    # return the children (to be placed on the stack)
     return left, right
 
 
