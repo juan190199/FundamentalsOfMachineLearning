@@ -6,6 +6,20 @@ import os
 
 
 def data_preparation():
+    """
+    What do the feature names (e.g. column games) stands for?
+    games: number of games in the player-referee dyad
+    A referee-player dyad describes the interactions between a particular ref and one player.
+    This means that each row in the dataset is of a unique player-ref combination,
+    listing all of the games by a given player with a particular referee at any point in his career.
+
+    How good are the skin color ratings? Do the raters agree?
+    The skin ratings are subjective. This leads to disregarding ratings
+
+    Should referees with very few appearances be excluded from the dataset?
+    No. There is no index that implies a relation between the numbers of appearances of a referee and the number of red
+    cards
+    """
     # Load dataset
     filename = os.path.join('data', 'CrowdstormingDataJuly1st.csv')
     df = pd.read_csv(filename, sep=",", header=0)
