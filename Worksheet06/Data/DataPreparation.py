@@ -80,6 +80,8 @@ def data_preparation():
     df_mean = df.apply(np.mean, axis=0)
     df = df - df_mean
 
+    return df
+
 
 
 
