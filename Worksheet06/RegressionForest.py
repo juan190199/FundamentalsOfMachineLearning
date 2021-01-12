@@ -4,9 +4,9 @@ import numpy as np
 
 
 class RegressionForest:
-    def __init__(self, n_trees):
+    def __init__(self, n_trees, df_mean):
         # create ensemble
-        self.trees = [RT.RegressionTree() for i in range(n_trees)]
+        self.trees = [RT.RegressionTree(df_mean) for i in range(n_trees)]
 
     def train(self, data, labels, n_min=1000):
         for tree in self.trees:
