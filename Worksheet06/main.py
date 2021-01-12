@@ -189,6 +189,50 @@ def task3(df, df_mean):
     print("\nerror rate, linear regression:")
     print(error)
 
+    color_rating_index = 0  # index of the color rating in df
+    L = 20  # number of folds
+
+    # load csv-file where we save the mean squared errors
+    err_data = pd.read_csv("errorsLie.txt", sep=",", index_col=False)
+
+    # load original data set
+    Y = df["percentageReds"].to_numpy()
+    X = df[["rating"]].to_numpy()
+
+    # 1. Linear Regression
+    # shuffle data
+    Y_shuffled = Y
+    X_shuffled = shuffle_data(X, color_rating_index)
+
+    # create  L folds
+    N = len(X_shuffled)
+    indices = np.random.choice(N, N, replace=False)
+    X_folds = np.array(np.array_split(X_shuffled[indices], L), dtype=object)
+    Y_folds = np.array(np.array_split(Y_shuffled[indices], L), dtype=object)
+
+    error = []
+    for i in range(L):
+        print(i / L * 100, "%")
+        # create training and test data
+        X_train = np.concatenate(X_folds[np.arange(L) != i], axis=0)
+        Y_train = np.concatenate(Y_folds[np.arange(L) != i], axis=0)
+        X_test = X_folds[i]
+        Y_test = Y_folds[i]
+
+        # compute error
+        regression = LR.LinearRegression(df_mean)
+        regression.train(X_train, Y_train)
+        error.append(compute_error(regression, X_test, Y_test))
+    error = np.mean(error)
+
+    # print error and save the value
+    print("\nerror rate, linear regression:")
+    print(error)
+
+    err_data.loc[len(err_data)] = [error]
+
+    err_data.to_csv("errorsLie.txt", sep=",", index=False)
+
 
 def main():
     df, df_mean = DP.data_preparation()
