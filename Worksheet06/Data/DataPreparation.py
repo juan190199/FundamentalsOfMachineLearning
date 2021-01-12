@@ -40,6 +40,7 @@ def data_preparation():
     df["rating"] = (df["rater1"] + df["rater2"]) / 2
     df = df.drop(labels=["rater1", "rater2"], axis=1)
 
+    # Percentage of red cards
     df["percentageReds"] = (df["redCards"] + df["yellowReds"]) / (df["victories"] + df["ties"] + df["defeats"])
     df = df.drop(labels=["redCards", "yellowReds"], axis=1)
 
