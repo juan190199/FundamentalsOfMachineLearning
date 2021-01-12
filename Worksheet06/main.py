@@ -37,10 +37,10 @@ def task1(df, df_mean):
     Y = df["percentageReds"].to_numpy()
     X = df.drop(labels=["percentageReds"], axis=1).to_numpy()
 
-    # number of folds
+    # Number of folds
     L = 10
 
-    # create  L folds
+    # Create  L folds
     N = len(X)
     indices = np.random.choice(N, N, replace=False)
     X_folds = np.array(np.array_split(X[indices], L), dtype=object)
@@ -50,19 +50,19 @@ def task1(df, df_mean):
     error = []
     for i in range(L):
         print(i / L * 100, "%")
-        # create training and test data
+        # Create training and test data
         X_train = np.concatenate(X_folds[np.arange(L) != i], axis=0)
         Y_train = np.concatenate(Y_folds[np.arange(L) != i], axis=0)
         X_test = X_folds[i]
         Y_test = Y_folds[i]
 
-        # compute error
+        # Compute error
         regression = LR.LinearRegression(df_mean)
         regression.train(X_train, Y_train)
         error.append(compute_error(regression, X_test, Y_test))
     error = np.mean(error)
 
-    # print error
+    # Print error
     print("\nError rate, linear regression:")
     print(error)
 
@@ -70,19 +70,19 @@ def task1(df, df_mean):
     error = []
     for i in range(L):
         print(i / L * 100, "%")
-        # create training and test data
+        # Create training and test data
         X_train = np.concatenate(X_folds[np.arange(L) != i], axis=0)
         Y_train = np.concatenate(Y_folds[np.arange(L) != i], axis=0)
         X_test = X_folds[i]
         Y_test = Y_folds[i]
 
-        # compute error
+        # Compute error
         forest = RF.RegressionForest(5, df_mean)
         forest.train(X_train, Y_train, n_min=500)
         error.append(compute_error(forest, X_test, Y_test))
     error = np.mean(error)
 
-    # print error
+    # Print error
     print("\nerror rate, regression forest:")
     print(error)
 
@@ -160,47 +160,47 @@ def task3(df, df_mean):
     X = df[["rating"]].to_numpy()
     df_mean = df_mean[["rating", "percentageReds"]]
 
-    # number of folds
+    # Number of folds
     L = 20
 
-    # create  L folds
+    # Create  L folds
     N = len(X)
     indices = np.random.choice(N, N, replace=False)
     X_folds = np.array(np.array_split(X[indices], L), dtype=object)
     Y_folds = np.array(np.array_split(Y[indices], L), dtype=object)
 
-    # 1. Linear Regression
+    # Linear Regression
     error = []
     for i in range(L):
         print(i / L * 100, "%")
-        # create training and test data
+        # Create training and test data
         X_train = np.concatenate(X_folds[np.arange(L) != i], axis=0)
         Y_train = np.concatenate(Y_folds[np.arange(L) != i], axis=0)
         X_test = X_folds[i]
         Y_test = Y_folds[i]
 
-        # compute error
+        # Compute error
         regression = LR.LinearRegression(df_mean)
         regression.train(X_train, Y_train)
         error.append(compute_error(regression, X_test, Y_test))
     error = np.mean(error)
 
-    # print error
+    # Print error
     print("\nerror rate, linear regression:")
     print(error)
 
     color_rating_index = 0  # index of the color rating in df
     L = 20  # number of folds
 
-    # load csv-file where we save the mean squared errors
+    # Load csv-file where we save the mean squared errors
     err_data = pd.read_csv("errorsLie.txt", sep=",", index_col=False)
 
-    # load original data set
+    # Load original data set
     Y = df["percentageReds"].to_numpy()
     X = df[["rating"]].to_numpy()
 
-    # 1. Linear Regression
-    # shuffle data
+    # Linear Regression
+    # Shuffle data
     Y_shuffled = Y
     X_shuffled = shuffle_data(X, color_rating_index)
 
@@ -213,19 +213,19 @@ def task3(df, df_mean):
     error = []
     for i in range(L):
         print(i / L * 100, "%")
-        # create training and test data
+        # Create training and test data
         X_train = np.concatenate(X_folds[np.arange(L) != i], axis=0)
         Y_train = np.concatenate(Y_folds[np.arange(L) != i], axis=0)
         X_test = X_folds[i]
         Y_test = Y_folds[i]
 
-        # compute error
+        # Compute error
         regression = LR.LinearRegression(df_mean)
         regression.train(X_train, Y_train)
         error.append(compute_error(regression, X_test, Y_test))
     error = np.mean(error)
 
-    # print error and save the value
+    # Print error and save the value
     print("\nerror rate, linear regression:")
     print(error)
 
@@ -234,12 +234,28 @@ def task3(df, df_mean):
     err_data.to_csv("errorsLie.txt", sep=",", index=False)
 
 
+def task4(df):
+    # Compute covariance matrices
+    Y = df["percentageReds"].to_numpy()
+    X = df["weight"].to_numpy()
+    print(np.cov(X, Y))
+    Y = df["rating"].to_numpy()
+    print(np.cov(X, Y), "\n")
+
+    Y = df["percentageReds"].to_numpy()
+    X = df["Position_Back"].to_numpy()
+    print(np.cov(X, Y))
+    Y = df["rating"].to_numpy()
+    print(np.cov(X, Y))
+
+
 def main():
     df, df_mean = DP.data_preparation()
 
     task1(df, df_mean)
     task2(df, df_mean)
     task3(df, df_mean)
+    task4(df)
 
 
 if __name__ == '__main__':
