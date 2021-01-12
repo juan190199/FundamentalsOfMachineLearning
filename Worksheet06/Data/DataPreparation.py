@@ -26,18 +26,8 @@ def data_preparation():
 
     # print(df.columns)
 
-    # Remove players without image
-    df = df[pd.notnull(df['photoID'])]
-
-    # Only players that have skin color rating
-    df = df[pd.notnull(df['rater1'])]
-    df = df[pd.notnull(df['rater2'])]
-
-    # Remove rows where the "refCount" < 22
-    # https://nbviewer.jupyter.org/github/mathewzilla/redcard/blob/master/Crowdstorming_visualisation.ipynb.
-    df = df.loc[df["refCount"] > 21].reset_index()
-    df = df.drop(["refNum", "refCount", "index"], axis=1)
-
+    # Remove instances with NaN data
+    df = df.dropna(axis=0)
 
     # Drop irrelevant features
     df = df.drop(
@@ -75,12 +65,17 @@ def data_preparation():
     df = df.drop(labels=["position"], axis=1)
     df = pd.concat([df, onehot], axis=1, sort=False)
 
-    # Appearances of referees and number of referee dyads pair (refNum)
+    # Number of games where referee is involved
     df['refCount'] = 0
     refs = pd.unique(df['refNum'].values.ravel())  # list all unique ref IDs
     # for each ref, count their dyads
     for r in refs:
         df.loc[df['refNum'] == r, "refCount"] = len(df[df['refNum'] == r])
+
+    # Remove rows where the "refNum" < 22
+    # https://nbviewer.jupyter.org/github/mathewzilla/redcard/blob/master/Crowdstorming_visualisation.ipynb.
+    df = df.loc[df["refCount"] > 21].reset_index()
+    df = df.drop(["refNum", "refCount", "index"], axis=1)
 
     # Normalize data
     defeats = df["defeats"] / (df["defeats"] + df["ties"] + df["victories"])
@@ -94,7 +89,7 @@ def data_preparation():
     df_mean = df.apply(np.mean, axis=0)
     df = df - df_mean
 
-    return df
+    return df, df_mean
 
 
 
