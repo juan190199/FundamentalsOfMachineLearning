@@ -5,6 +5,8 @@ import Worksheet06.RegressionForest as RF
 import numpy as np
 import pandas as pd
 
+import os
+
 from IPython.display import display
 pd.options.display.float_format = '{:,.2f}'.format
 
@@ -149,7 +151,8 @@ def task2(df, df_mean):
     print(error)
     err_data.loc[len(err_data)] = [error_lr, error]
 
-    err_data.to_csv("errors.txt", sep=",", index=False)
+    error_file = os.path.join('data', 'errors.txt')
+    err_data.to_csv(error_file, sep=",", index=False)
 
     err_data = pd.read_csv("errors.txt", sep=",", index_col=False)
     display(err_data)
