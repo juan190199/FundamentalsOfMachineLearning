@@ -20,6 +20,10 @@
   * Density Forest
   * Decision Forest
   
+* Regression
+  * Linear Regression
+  * Regression Forest
+  
 * Model Selection
   * Manual selection of features
   
