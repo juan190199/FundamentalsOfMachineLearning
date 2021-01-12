@@ -54,7 +54,7 @@ class RegressionTree(Tree):
                 stack.append(left)
                 stack.append(right)
             else:
-                make_regression_leaf_node(node, df_mean)
+                make_regression_leaf_node(node, self.df_mean)
 
     def predict(self, x):
         leaf = self.find_leaf(x)
