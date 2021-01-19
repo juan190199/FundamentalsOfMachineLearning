@@ -1,6 +1,6 @@
-import Worksheet06.Data.DataPreparation as DP
-import Worksheet06.LinearRegression as LR
-import Worksheet06.RegressionForest as RF
+import Worksheet06v1.Data.DataPreparation as DP
+import Worksheet06v1.LinearRegression as LR
+import Worksheet06v1.RegressionForest as RF
 
 import numpy as np
 import pandas as pd
@@ -94,7 +94,8 @@ def task2(df, df_mean):
     L = 10  # number of folds
 
     # Load csv-file where we save the mean squared errors
-    err_data = pd.read_csv("errors.txt", sep=",", index_col=False)
+    error_file = os.path.join('data', 'errors.txt')
+    err_data = pd.read_csv(error_file, sep=",", index_col=False)
 
     # Load original data set
     Y = df["percentageReds"].to_numpy()
@@ -154,7 +155,7 @@ def task2(df, df_mean):
     error_file = os.path.join('data', 'errors.txt')
     err_data.to_csv(error_file, sep=",", index=False)
 
-    err_data = pd.read_csv("errors.txt", sep=",", index_col=False)
+    err_data = pd.read_csv(error_file, sep=",", index_col=False)
     display(err_data)
 
 
@@ -234,7 +235,8 @@ def task3(df, df_mean):
 
     err_data.loc[len(err_data)] = [error]
 
-    err_data.to_csv("errorsLie.txt", sep=",", index=False)
+    error_file = os.path.join('data', 'errors.txt')
+    err_data.to_csv(error_file, sep=",", index=False)
 
 
 def task4(df):

@@ -7,6 +7,9 @@ import os
 
 def data_preparation():
     """
+     Note that the data comes in the format of player / referee pairs ('dyad').
+     Hence one row contains the data about the interactions between a single player and a single referee.
+
     What do the feature names (e.g. column games) stands for?
     games: number of games in the player-referee dyad
     A referee-player dyad describes the interactions between a particular ref and one player.
@@ -25,11 +28,11 @@ def data_preparation():
     df = pd.read_csv(filename, sep=",", header=0)
 
     # print(df.columns)
+    print("Shape of the raw data: ", df.shape)
 
     # Remove instances with NaN data
     df = df.dropna(axis=0)
 
-    # Drop irrelevant features
     df = df.drop(
         labels=["playerShort", "player", "photoID", "refCountry", "nIAT", "seIAT", "nExp", "seExp", "yellowCards",
                 "club", "birthday", "Alpha_3", "games"], axis=1)

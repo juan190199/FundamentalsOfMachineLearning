@@ -1,4 +1,4 @@
-from Worksheet06 import RegressionTree as RT
+from Worksheet06v1 import RegressionTree as RT
 
 import numpy as np
 
