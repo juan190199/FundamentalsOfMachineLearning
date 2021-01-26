@@ -27,6 +27,9 @@
 * Model Selection
   * Manual selection of features
   
+* Application: 
+  * Computer tomography
+  
   
 **References**
 * https://sebastianraschka.com/blog/2016/model-evaluation-selection-part3.html
