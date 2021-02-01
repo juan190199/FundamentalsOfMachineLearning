@@ -38,6 +38,7 @@ class DensityTree(BaseClasses.Tree):
         self.root.box = m.copy(), M.copy()
 
         # build the tree
+        # put root in stack
         stack = [self.root]
         while len(stack):
             node = stack.pop()
@@ -46,6 +47,7 @@ class DensityTree(BaseClasses.Tree):
                 # Call 'make_density_split_node()' with 'D_try' randomly selected
                 # indices from 'valid_features'. This turns 'node' into a split node
                 # and returns the two children, which must be placed on the 'stack'.
+
                 perm = np.random.permutation(len(valid_features))
                 left, right = make_density_split_node(node, N, valid_features[perm][:D_try])
                 stack.append(left)
